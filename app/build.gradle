@@ -24,4 +24,9 @@ dependencies {
 
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation project(':chat-ui')
+
+    // CHAT SOCKET.IO IPG alteração
+    implementation 'com.github.nkzawa:socket.io-client:0.3.0'
 }
+
+
