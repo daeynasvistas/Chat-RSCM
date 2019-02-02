@@ -1,5 +1,6 @@
 package pt.ipg.chatui.sample;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -72,9 +73,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        String reqString = Build.MANUFACTURER
+                + " " + Build.MODEL + " " + Build.VERSION.RELEASE
+                + " " + Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
+
         // IPG - Alteração -------------- Daey
         mSocket.on("new message", onNewMessage);
-        mSocket.emit("add user", "ANDROID");
+        mSocket.emit("add user", reqString);
         mSocket.connect();
         // IPG - Alteração -------------- Daey
 
