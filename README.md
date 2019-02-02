@@ -1,9 +1,7 @@
 <a href="http://mcm.ipg.pt"><img src="http://www.ipg.pt/website/imgs/logotipo_ipg.jpg" title="IPG(MCM)" alt="IPG MCM 2018/19"></a>
 
 # Android Chat UI
-
-
-![Image of Library in action](http://res.cloudinary.com/duswj2lve/image/upload/v1479837904/chatui_k3diqq.png){:height="50%" width="50%"}
+<img src="ttp://res.cloudinary.com/duswj2lve/image/upload/v1479837904/chatui_k3diqq.png" width="100">
 
 ## Version
 v0.1
