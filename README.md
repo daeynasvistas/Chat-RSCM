@@ -3,7 +3,7 @@
 # Android Chat UI
 
 
-![Image of Library in action](http://res.cloudinary.com/duswj2lve/image/upload/v1479837904/chatui_k3diqq.png)
+![Image of Library in action](http://res.cloudinary.com/duswj2lve/image/upload/v1479837904/chatui_k3diqq.png | width=100)
 
 ## Version
 v0.1
