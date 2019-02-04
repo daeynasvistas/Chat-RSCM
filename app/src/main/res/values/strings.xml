@@ -2,5 +2,6 @@
 
     <string name="app_name">Chat-RSCM (2018/19)</string>
     <string name="start_typing">Start typing</string>
+    <string name="title_activity_amigos">AmigosActivity</string>
 
 </resources>
