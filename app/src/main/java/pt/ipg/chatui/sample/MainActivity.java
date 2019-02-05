@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     JSONObject jsonObject = new JSONObject(json);
                     chatView.addMessage(new ChatMessage(jsonObject.getString("message"), jsonObject.getLong("time"), Type.valueOf(jsonObject.getString("type")), jsonObject.getString("username")));
+                    messages.add(json);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
