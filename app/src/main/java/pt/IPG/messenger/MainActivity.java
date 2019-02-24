@@ -1,8 +1,11 @@
 package pt.IPG.messenger;
 
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.view.Gravity;
@@ -14,13 +17,34 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 import pt.IPG.messenger.R;
+import pt.IPG.messenger.recyclerview.Chat;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     TextView chats;
     NavigationView navigationView, navigationViewBottom;
     DrawerLayout drawer;
+
+    List<JSONObject> list = new ArrayList<JSONObject>();
+
+    ArrayList<String> conversation = new ArrayList<String>();
+
+    List<Chat> data = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,10 +52,58 @@ public class MainActivity extends BaseActivity
 
         setupToolbar(R.id.toolbar, "Messages");
 
-        FragmentTransaction ft;
-        FragmentHome fragmentHome = new FragmentHome();
-        ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.frameLayout, fragmentHome).commit();
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                //TODO your background code
+
+                //retrieve
+                SharedPreferences settings = MainActivity.this.getSharedPreferences("myPrefs", 0);
+                String auth_token_string = settings.getString("token", ""/*default value*/);
+                String token = auth_token_string;
+
+                JSONObject request = new JSONObject();
+                String result =  getJSONFromUrl();
+
+                try {
+                    JSONObject jsonRoot  = new JSONObject(result);
+                    JSONArray jsonData = jsonRoot.getJSONArray("conversations");
+                    JSONArray array = new JSONArray(jsonData.toString());
+
+                    for (int i = 0; i < jsonData.length(); i++) {
+                        list.add(array.getJSONArray(i).getJSONObject(0));
+                        try {
+                            String conver = String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("conversationId"));
+                           // conversation.add(String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("conversationId")));
+                            conversation.add(conver);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+
+                    // bundle
+                    Bundle b = new Bundle();
+                    b.putStringArrayList("Contactos", conversation);
+
+                    // enviar lista de contactos
+                    FragmentTransaction ft;
+                    FragmentHome fragmentHome = new FragmentHome();
+                    fragmentHome.setArguments(b);
+                    ft = getSupportFragmentManager().beginTransaction();
+                    ft.add(R.id.frameLayout, fragmentHome).commit();
+
+
+
+                } catch (JSONException e) {
+                    //   System.out.println(e.getMessage());
+                }
+
+
+            }
+        });
+
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -51,6 +123,49 @@ public class MainActivity extends BaseActivity
         initializeCountDrawer();
 
     }
+
+
+    public String getJSONFromUrl() {
+        SharedPreferences settings = MainActivity.this.getSharedPreferences("myPrefs", 0);
+        String tokenOK = settings.getString("token", ""/*default value*/);
+
+        //String tokenOK = "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1YzY2OWU4YWU0M2UzZDNlMjQ0ZjRhZTciLCJmaXJzdE5hbWUiOiJEYW5pZWwiLCJsYXN0TmFtZSI6Ik1lbmRlcyIsImVtYWlsIjoiZGFuaWVsQGVwdC5wdCIsInJvbGUiOiJNZW1iZXIiLCJpYXQiOjE1NTA0OTQ3NDAsImV4cCI6MTU1MTA5OTU0MH0.pNmjguEXsaHDBIp1Hwt5BuzF74iSlFqsqMZCrendwxk";
+        String result ="";
+        try {
+            //Connect
+            HttpURLConnection urlConnection = (HttpURLConnection) (new URL("https://chat-ipg-04.azurewebsites.net/api/chat").openConnection());
+            //   urlConnection.setDoOutput(false);
+            urlConnection.setRequestMethod("GET");
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+            urlConnection.setRequestProperty("Accept", "application/json");
+            urlConnection.setRequestProperty("Authorization", tokenOK);
+
+            urlConnection.connect();
+            urlConnection.setConnectTimeout(10000);
+
+
+            //Read
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+            String line = null;
+            StringBuilder sb = new StringBuilder();
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            bufferedReader.close();
+            result = sb.toString();
+
+
+        } catch (UnsupportedEncodingException e){
+            return result;
+            //  e.printStackTrace();
+        } catch (IOException e) {
+            return result;
+            // e.printStackTrace();
+        }
+        return result;
+
+    }
+
 
     private void initializeCountDrawer(){
         chats.setGravity(Gravity.CENTER);
