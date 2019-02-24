@@ -1,11 +1,8 @@
 package pt.IPG.messenger;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -13,7 +10,6 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,10 +17,6 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -36,7 +28,6 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -101,9 +92,9 @@ public class Conversation extends BaseActivity  {
 
                         // IPG - Alteração -------------- Dinis
                         try {
-                            item.setText(message);
+                            //item.setText(message);
                             // DINIS .. não funciona aqui quando recebo do servidor
-                            // item.setText(new String(encryption.Decrypt(message)));
+                            item.setText(new String(encryption.Decrypt(message)));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -291,8 +282,8 @@ public class Conversation extends BaseActivity  {
                         });
 
 
-                        //mSocket.emit("new message", room, encryption.Encrypt(text.getText().toString(), Encryption.MessageType.Encrypted), ID);
-                        mSocket.emit("new message", room, text.getText() , ID);
+                        mSocket.emit("new message", room, encryption.Encrypt(text.getText().toString(), Encryption.MessageType.Encrypted), ID);
+                        //mSocket.emit("new message", room, text.getText() , ID);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
