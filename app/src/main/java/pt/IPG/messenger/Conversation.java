@@ -48,7 +48,7 @@ public class Conversation extends BaseActivity  {
     private Button send;
 
     // IPG - Alteração -------------- Dinis
-    private Encryption encryption;
+    private Encryption encryption = new Encryption();
 
     String room = "";
     String ID = "";
@@ -92,9 +92,7 @@ public class Conversation extends BaseActivity  {
 
                         // IPG - Alteração -------------- Dinis
                         try {
-                            //item.setText(message);
-                            // DINIS .. não funciona aqui quando recebo do servidor
-                            item.setText(new String(encryption.Decrypt(message)));
+                            item.setText(encryption.Decrypt(message));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -107,15 +105,10 @@ public class Conversation extends BaseActivity  {
                             e.printStackTrace();
                         }
                         //text.setText("");
-
                     }
-
                 }
-
             });
         }
-
-
     };
 
     @Override
@@ -182,8 +175,13 @@ public class Conversation extends BaseActivity  {
                         if (!author.equals(ID)) {
                             item.setType("1");
                         }else{item.setType("2");}
-                        String body = jsonData.getJSONObject(i).getString("body");
-                        item.setText(body);
+                        // IPG - Alteração -------------- Dinis
+                        try {
+                            String body = encryption.Decrypt(jsonData.getJSONObject(i).getString("body"));
+                            item.setText(body);
+                        }catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
                         data.add(item);
                     }
@@ -210,8 +208,6 @@ public class Conversation extends BaseActivity  {
         });
 
         //--fim receber conversas
-        // IPG - Alteração -------------- Dinis
-        encryption = new Encryption();
 
         // IPG - Alteração -------------- Daey
         mSocket.emit("enter conversation", room);
@@ -258,6 +254,9 @@ public class Conversation extends BaseActivity  {
         send = (Button) findViewById(R.id.bt_send);
 
         send.setOnClickListener(new View.OnClickListener() {
+            // IPG - Alteração -------------- Dinis
+            String msg="";
+
             @Override
             public void onClick(View view) {
                 if (!text.getText().equals("")){
@@ -271,18 +270,25 @@ public class Conversation extends BaseActivity  {
 
                     // IPG - Alteração -------------- Dinis
                     try {
+                        msg = encryption.Encrypt(text.getText().toString(), Encryption.MessageType.Encrypted);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
                         // background para fazer cenas na base de dados mongop
                         AsyncTask.execute(new Runnable() {
                             @Override
                             public void run() {
                                 //TODO your background code
                                 // mongoDB save stuff
-                                sendReplyToConversation(room, text.getText().toString());
+                                // IPG - Alteração -------------- Dinis
+                                sendReplyToConversation(room, msg);
                             }
                         });
 
-
-                        mSocket.emit("new message", room, encryption.Encrypt(text.getText().toString(), Encryption.MessageType.Encrypted), ID);
+                        // IPG - Alteração -------------- Dinis
+                        mSocket.emit("new message", room,msg, ID);
                         //mSocket.emit("new message", room, text.getText() , ID);
                     } catch (Exception e) {
                         e.printStackTrace();
