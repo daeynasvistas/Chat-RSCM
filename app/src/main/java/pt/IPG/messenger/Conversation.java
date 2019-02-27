@@ -1,6 +1,7 @@
 package pt.IPG.messenger;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -428,6 +429,13 @@ public class Conversation extends BaseActivity  {
         }
         return result;
 
+    }
+
+    public void Call(View view) {
+
+        Intent intent = new Intent(Conversation.this, VoiceChatViewActivity.class);
+        startActivity(intent);
+        finish();
     }
 
 

@@ -1,5 +1,6 @@
 package pt.IPG.messenger;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -15,6 +16,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -231,4 +233,13 @@ public class MainActivity extends BaseActivity
     public boolean onPrepareOptionsMenu(Menu menu) {
         return super.onPrepareOptionsMenu(menu);
     }
+
+    public void Call(View view) {
+
+
+            Intent intent = new Intent(MainActivity.this, VoiceChatViewActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
 }
