@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,7 +48,7 @@ public class Conversation extends BaseActivity  {
     private ConversationRecyclerView mAdapter;
     private EditText text;
     private Button send;
-
+    private ImageButton send_localization;
     // IPG - Alteração -------------- Dinis
     private Encryption encryption = new Encryption();
 
@@ -59,6 +60,9 @@ public class Conversation extends BaseActivity  {
 
     // IPG - Alteração -------------- Daey
     private Socket mSocket;
+    private String myLocation;
+
+
     {
         try {
             //mSocket = IO.socket("http://chat-ipg.azurewebsites.net");
@@ -91,6 +95,9 @@ public class Conversation extends BaseActivity  {
 
                         List<ChatData> data = new ArrayList<ChatData>();
                         ChatData item = new ChatData();
+
+
+                        // Foi ALterado no MASTER anterior
                         item.setTime("6:00pm");
                         item.setType("1");
 
@@ -144,6 +151,7 @@ public class Conversation extends BaseActivity  {
         mAdapter = new ConversationRecyclerView(this,setData());
         room = getIntent().getExtras().getString("roomName",null);
         ID = getIntent().getExtras().getString("ID",null);
+        myLocation = getIntent().getExtras().getString("Localization",null);
 
         setContentView(R.layout.activity_conversation);
         setupToolbarWithUpNav(R.id.toolbar, "Alterar para API getuser" , R.drawable.ic_action_back);
@@ -175,6 +183,8 @@ public class Conversation extends BaseActivity  {
 
 
                         item.setTime( newFormat.format(date));
+
+                        // problemas de enviar para todos no nodeJS
                         String author = jsonData.getJSONObject(i).getJSONObject("author").getString("_id");
                         if (!author.equals(ID)) {
                             item.setType("1");
@@ -255,8 +265,64 @@ public class Conversation extends BaseActivity  {
                 }, 500);
             }
         });
-        send = (Button) findViewById(R.id.bt_send);
 
+        // --- Daey enviar localização
+        send_localization = (ImageButton) findViewById(R.id.bt_attachment_localization);
+        send_localization.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if (!text.getText().equals("")){
+                    List<ChatData> data = new ArrayList<ChatData>();
+                    ChatData item = new ChatData();
+                    String msg= myLocation;
+
+                    item.setType("2");
+                    item.setText(msg);
+                    data.add(item);
+                    mAdapter.addItem(data);
+
+                    // IPG - Alteração -------------- Dinis
+                    try {
+                        msg = encryption.Encrypt(msg, Encryption.MessageType.Encrypted);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        // background para fazer cenas na base de dados mongop
+                        final String finalMsg = msg;
+                        AsyncTask.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                //TODO your background code
+                                // mongoDB save stuff
+                                // IPG - Alteração -------------- Dinis
+                                sendReplyToConversation(room, finalMsg);
+                            }
+                        });
+
+                        // IPG - Alteração -------------- Dinis
+                        mSocket.emit("new message", room,msg, ID);
+                        //mSocket.emit("new message", room, text.getText() , ID);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    //mSocket.emit("refresh messages", text.getText().toString());
+
+                    try {
+                        mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() -1);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    text.setText("");
+                }
+            }
+        });
+
+
+        send = (Button) findViewById(R.id.bt_send);
         send.setOnClickListener(new View.OnClickListener() {
             // IPG - Alteração -------------- Dinis
             String msg="";

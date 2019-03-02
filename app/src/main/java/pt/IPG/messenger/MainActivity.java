@@ -1,20 +1,35 @@
 package pt.IPG.messenger;
 
+import android.Manifest;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,8 +41,12 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import pt.IPG.messenger.recyclerview.Chat;
 
@@ -38,15 +57,21 @@ public class MainActivity extends BaseActivity
     DrawerLayout drawer;
 
     List<JSONObject> list = new ArrayList<JSONObject>();
-
+    List<Address> addresses;
     ArrayList<String> conversation = new ArrayList<String>();
 
     List<Chat> data = new ArrayList<>();
+    SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private String myLocation;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initLocation();
+        getLastLocationNewMethod();
 
         setupToolbar(R.id.toolbar, "Messages");
 
@@ -72,9 +97,20 @@ public class MainActivity extends BaseActivity
                         list.add(array.getJSONArray(i).getJSONObject(0));
                         try {
                             String conver = String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("conversationId"));
-                           // conversation.add(String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("conversationId")));
+                            String updateDate = String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("updatedAt"));
+
+                            // conversation.add(String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("conversationId")));
                             conversation.add(conver);
+                            //2019-03-02T16:25:43.693Z
+                            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+                            // SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                            Date date =  format.parse(updateDate.replaceAll("Z$", "+0000"));
+                            String dateString = newFormat.format(date);
+
+                             conversation.add(dateString);
                         } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (ParseException e) {
                             e.printStackTrace();
                         }
                     }
@@ -82,6 +118,7 @@ public class MainActivity extends BaseActivity
                     // bundle
                     Bundle b = new Bundle();
                     b.putStringArrayList("Contactos", conversation);
+                    b.putString("Localization",myLocation);
 
                     // enviar lista de contactos
                     FragmentTransaction ft;
@@ -111,6 +148,96 @@ public class MainActivity extends BaseActivity
                 findItem(R.id.nav_chats));
         initializeCountDrawer();
     }
+
+
+    private void initLocation() {
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION}, 1000);
+        } else {
+            // faqzer cenas depois de aceitar
+        }
+    }
+
+    /// ---------------------------------- FIM GOOGLE GPS --------------------------
+
+    //Get last known location coordinates
+    private void getLastLocationNewMethod() {
+        FusedLocationProviderClient mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            //session.saveCurrentLocation("Everywhere");
+            return;
+        }
+        mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                // GPS location can be null if GPS is switched off
+                if (location != null) {
+                    double myLat = location.getLatitude();
+                    double myLon = location.getLongitude();
+
+                    getAddress(myLat, myLon);
+
+
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("MapDemoActivity", "Error trying to get last GPS location");
+                e.printStackTrace();
+
+            }
+        });
+    }
+
+    //get location name from coordinates
+    public void getAddress(double lat, double lng) {
+        String currentLocation = "";
+
+        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.ENGLISH);
+        try {
+
+            addresses = geocoder.getFromLocation(lat, lng, 1);
+
+            Address obj = addresses.get(0);
+            String add = obj.getAddressLine(0);
+            add = add + "\n" + obj.getCountryName();
+          //  add = add + "\n" + obj.getCountryCode();
+          //  add = add + "\n" + obj.getAdminArea();
+          //  add = add + "\n" + obj.getPostalCode();
+          //  add = add + "\n" + obj.getSubAdminArea();
+          //  add = add + "\n" + obj.getLocality();
+          //  add = add + "\n" + obj.getSubThoroughfare();
+            add = add + "\n" + "Lat:"+lat;
+            add = add + "\n" + "Lng:"+lng;
+
+            myLocation = add;
+            Log.v("IGA", "Address" + add);
+
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+
+    /// ---------------------------------- FIM GOOGLE GPS --------------------------
+
 
 
     public String getJSONFromUrl() {
