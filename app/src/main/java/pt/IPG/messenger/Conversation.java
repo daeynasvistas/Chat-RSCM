@@ -1,11 +1,8 @@
 package pt.IPG.messenger;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -13,7 +10,6 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,10 +17,6 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -36,7 +28,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -57,10 +49,13 @@ public class Conversation extends BaseActivity  {
     private Button send;
 
     // IPG - Alteração -------------- Dinis
-    private Encryption encryption;
+    private Encryption encryption = new Encryption();
 
     String room = "";
     String ID = "";
+
+    SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
 
     // IPG - Alteração -------------- Daey
     private Socket mSocket;
@@ -101,9 +96,7 @@ public class Conversation extends BaseActivity  {
 
                         // IPG - Alteração -------------- Dinis
                         try {
-                            item.setText(message);
-                            // DINIS .. não funciona aqui quando recebo do servidor
-                            // item.setText(new String(encryption.Decrypt(message)));
+                            item.setText(encryption.Decrypt(message));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -116,15 +109,10 @@ public class Conversation extends BaseActivity  {
                             e.printStackTrace();
                         }
                         //text.setText("");
-
                     }
-
                 }
-
             });
         }
-
-
     };
 
     @Override
@@ -182,7 +170,7 @@ public class Conversation extends BaseActivity  {
                         String time = jsonData.getJSONObject(i).getString("createdAt");
                         //2019-02-19T12:24:06.557Z
                         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-                        SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                       // SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                         Date date = format.parse(time.replaceAll("Z$", "+0000"));
 
 
@@ -191,8 +179,13 @@ public class Conversation extends BaseActivity  {
                         if (!author.equals(ID)) {
                             item.setType("1");
                         }else{item.setType("2");}
-                        String body = jsonData.getJSONObject(i).getString("body");
-                        item.setText(body);
+                        // IPG - Alteração -------------- Dinis
+                        try {
+                            String body = encryption.Decrypt(jsonData.getJSONObject(i).getString("body"));
+                            item.setText(body);
+                        }catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
                         data.add(item);
                     }
@@ -219,8 +212,6 @@ public class Conversation extends BaseActivity  {
         });
 
         //--fim receber conversas
-        // IPG - Alteração -------------- Dinis
-        encryption = new Encryption();
 
         // IPG - Alteração -------------- Daey
         mSocket.emit("enter conversation", room);
@@ -267,12 +258,17 @@ public class Conversation extends BaseActivity  {
         send = (Button) findViewById(R.id.bt_send);
 
         send.setOnClickListener(new View.OnClickListener() {
+            // IPG - Alteração -------------- Dinis
+            String msg="";
+
             @Override
             public void onClick(View view) {
                 if (!text.getText().equals("")){
                     List<ChatData> data = new ArrayList<ChatData>();
                     ChatData item = new ChatData();
-                    item.setTime("6:00pm");
+                    Date currentTime = Calendar.getInstance().getTime();
+
+                    item.setTime(newFormat.format(currentTime));
                     item.setType("2");
                     item.setText(text.getText().toString());
                     data.add(item);
@@ -280,19 +276,26 @@ public class Conversation extends BaseActivity  {
 
                     // IPG - Alteração -------------- Dinis
                     try {
+                        msg = encryption.Encrypt(text.getText().toString(), Encryption.MessageType.Encrypted);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
                         // background para fazer cenas na base de dados mongop
                         AsyncTask.execute(new Runnable() {
                             @Override
                             public void run() {
                                 //TODO your background code
                                 // mongoDB save stuff
-                                sendReplyToConversation(room, text.getText().toString());
+                                // IPG - Alteração -------------- Dinis
+                                sendReplyToConversation(room, msg);
                             }
                         });
 
-
-                        //mSocket.emit("new message", room, encryption.Encrypt(text.getText().toString(), Encryption.MessageType.Encrypted), ID);
-                        mSocket.emit("new message", room, text.getText() , ID);
+                        // IPG - Alteração -------------- Dinis
+                        mSocket.emit("new message", room,msg, ID);
+                        //mSocket.emit("new message", room, text.getText() , ID);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
