@@ -28,6 +28,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -52,6 +53,9 @@ public class Conversation extends BaseActivity  {
 
     String room = "";
     String ID = "";
+
+    SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
 
     // IPG - Alteração -------------- Daey
     private Socket mSocket;
@@ -166,7 +170,7 @@ public class Conversation extends BaseActivity  {
                         String time = jsonData.getJSONObject(i).getString("createdAt");
                         //2019-02-19T12:24:06.557Z
                         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-                        SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                       // SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                         Date date = format.parse(time.replaceAll("Z$", "+0000"));
 
 
@@ -262,7 +266,9 @@ public class Conversation extends BaseActivity  {
                 if (!text.getText().equals("")){
                     List<ChatData> data = new ArrayList<ChatData>();
                     ChatData item = new ChatData();
-                    item.setTime("6:00pm");
+                    Date currentTime = Calendar.getInstance().getTime();
+
+                    item.setTime(newFormat.format(currentTime));
                     item.setType("2");
                     item.setText(text.getText().toString());
                     data.add(item);
