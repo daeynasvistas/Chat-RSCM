@@ -11,6 +11,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,6 +52,8 @@ public class Conversation extends BaseActivity  {
     private EditText text;
     private Button send;
     private ImageButton send_localization;
+    private ImageButton send_image;
+
     // IPG - Alteração -------------- Dinis
     private Encryption encryption = new Encryption();
 
@@ -92,12 +97,7 @@ public class Conversation extends BaseActivity  {
 
                     if(!username.equals(ID)){
                         //problema com broadcast to self
-
-
-
-
                         List<ChatData> data = new ArrayList<ChatData>();
-
                         ChatData item = new ChatData();
                         SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                         String currentDateTimeString = newFormat.getDateTimeInstance().format(new Date());
@@ -155,7 +155,7 @@ public class Conversation extends BaseActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAdapter = new ConversationRecyclerView(this,setData());
+        mAdapter = new ConversationRecyclerView(this,setData(),null);
         room = getIntent().getExtras().getString("roomName",null);
         ID = getIntent().getExtras().getString("ID",null);
         myLocation = getIntent().getExtras().getString("Localization",null);
@@ -329,6 +329,76 @@ public class Conversation extends BaseActivity  {
                 }
             }
         });
+
+
+
+
+        // --- Luis enviar imagem
+        send_image = (ImageButton) findViewById(R.id.bt_attachment);
+        send_image.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if (!text.getText().equals("")){
+                    List<ChatData> data = new ArrayList<ChatData>();
+                    ChatData item = new ChatData();
+
+                     //    String msg= myLocation;
+                    Date currentTime = Calendar.getInstance().getTime();
+
+                    item.setTime(newFormat.format(currentTime));
+                    String msg = "https://i.imgur.com/tGbaZCY.jpg";
+
+                    // ImageView ivBasicImage = (ImageView) findViewById(R.id.image_view);
+                   // Picasso.with(getApplication()).load(msg).into(ivBasicImage);
+
+
+                    item.setType("3");
+                    item.setText(msg);
+                    data.add(item);
+                    mAdapter.addItem(data);
+
+                    // IPG - Alteração -------------- Dinis
+                   /* try {
+                        msg = encryption.Encrypt(msg, Encryption.MessageType.Encrypted);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    */
+                    try {
+                        // background para fazer cenas na base de dados mongop
+                        final String finalMsg = msg;
+                        AsyncTask.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                //TODO your background code
+                                // mongoDB save stuff
+                                // IPG - Alteração -------------- Dinis
+                                SharedPreferences settings = getApplication().getSharedPreferences("myPrefs", 0);
+                             //   Tools.sendReplyToConversation(room, finalMsg, settings);
+                            }
+                        });
+
+                        // IPG - Alteração -------------- Dinis
+                       // mSocket.emit("new message", room,msg, ID);
+                        //mSocket.emit("new message", room, text.getText() , ID);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    //mSocket.emit("refresh messages", text.getText().toString());
+
+                    try {
+                        mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() -1);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    text.setText("");
+                }
+            }
+        });
+
+
 
 
         send = (Button) findViewById(R.id.bt_send);

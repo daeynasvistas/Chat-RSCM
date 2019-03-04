@@ -16,6 +16,7 @@
         android:layout_marginTop="@dimen/space5"
         android:layout_marginRight="@dimen/space10"
         android:src="@drawable/user1" />
+
     <android.support.v7.widget.CardView
         android:id="@+id/bubble"
         android:layout_width="wrap_content"

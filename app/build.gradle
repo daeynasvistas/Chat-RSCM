@@ -35,6 +35,9 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-location:16.0.0'
 
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+
     // CHAT SOCKET.IO IPG alteração
     api ('io.socket:socket.io-client:1.0.0'){
         exclude group: 'org.json', module: 'json'
