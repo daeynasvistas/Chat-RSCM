@@ -46,6 +46,7 @@ import java.net.ProtocolException;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,9 +69,10 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
     String lastChat[] = {};
     List<JSONObject> list = new ArrayList<JSONObject>();
     ArrayList<String> conversation = new ArrayList<String>();
+    String myLocation;
 
     List<Chat> data = new ArrayList<>();
-
+    SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 
     public FragmentHome(){
@@ -87,6 +89,7 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
 
         //retrieve
         conversation = getArguments().getStringArrayList("Contactos");
+        myLocation = getArguments().getString("Localization");
 
         getActivity().supportInvalidateOptionsMenu();
         ((MainActivity)getActivity()).changeTitle(R.id.toolbar, "Messages");
@@ -114,9 +117,10 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
         @DrawableRes int img[]= {R.drawable.user1 , R.drawable.user1, R.drawable.user1, R.drawable.user1, R.drawable.user1 , R.drawable.user1 , R.drawable.user1, R.drawable.user1, R.drawable.user1, R.drawable.user1 };
         boolean online[] = {true, false, true, false, true, true, true, false, false, true};
 
-        for (int i = 0; i< conversation.size(); i++){
+        for (int i = 0; i< conversation.size(); i+= 2){
             Chat chat = new Chat();
-            chat.setmTime("5:04pm");
+            //chat.setmTime("5:04pm");
+            chat.setmTime(conversation.get(i+1));
             chat.setName(" beta test");
             chat.setImage(img[i]);
             chat.setOnline(online[i]);
@@ -141,6 +145,8 @@ public class FragmentHome extends Fragment implements ChatAdapter.ViewHolder.Cli
 
             intent.putExtra("roomName", room);  // pass your values and retrieve them in the other Activity using keyName
             intent.putExtra("ID", ID);  // pass your values and retrieve them in the other Activity using keyName
+            intent.putExtra("Localization", myLocation);  // pass your values and retrieve them in the other Activity using keyName
+
         startActivity(intent);
      }
 

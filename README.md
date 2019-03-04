@@ -16,12 +16,6 @@ https://documenter.getpostman.com/view/1885494/S11Bxgv2#6bf6dd63-7868-4b61-9859-
 
 4: enviar mensagens encriptadas entre utilizadores
 
-
-![1_chat](https://user-images.githubusercontent.com/2634610/53040183-bb9f2600-3478-11e9-94c1-e95d8fafb17e.png)
-![2_chat](https://user-images.githubusercontent.com/2634610/53040184-bb9f2600-3478-11e9-8bed-4a94e5375017.png)
-![3_chat](https://user-images.githubusercontent.com/2634610/53040187-bc37bc80-3478-11e9-91d1-a1d70be1f752.png)
-
-
 ### TODO
 # Functionality
 
@@ -29,6 +23,7 @@ https://documenter.getpostman.com/view/1885494/S11Bxgv2#6bf6dd63-7868-4b61-9859-
 - [x] Troca de texto
 - [ ] Suporte de voz
 - [ ] Troca de ficheiros
+- [x] Envio localização GPS
 
 ### Requisitos de Modos de comunicação
 - [ ] Comunicação por infra-estrutura
@@ -51,6 +46,10 @@ https://documenter.getpostman.com/view/1885494/S11Bxgv2#6bf6dd63-7868-4b61-9859-
 ## Version
 v0.2
 
+
+![1_chat](https://user-images.githubusercontent.com/2634610/53040183-bb9f2600-3478-11e9-94c1-e95d8fafb17e.png)
+![2_chat](https://user-images.githubusercontent.com/2634610/53040184-bb9f2600-3478-11e9-8bed-4a94e5375017.png)
+![3_chat](https://user-images.githubusercontent.com/2634610/53040187-bc37bc80-3478-11e9-91d1-a1d70be1f752.png)
 
 
 
