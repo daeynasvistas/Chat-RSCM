@@ -10,21 +10,13 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,9 +39,9 @@ public class Conversation extends BaseActivity  {
     private ConversationRecyclerView mAdapter;
     private EditText text;
     private Button send;
-
+    private ImageButton send_localization;
     // IPG - Alteração -------------- Dinis
-    private Encryption encryption = new Encryption();
+    private Encryption encryption;
 
     String room = "";
     String ID = "";
@@ -59,6 +51,9 @@ public class Conversation extends BaseActivity  {
 
     // IPG - Alteração -------------- Daey
     private Socket mSocket;
+    private String myLocation;
+
+
     {
         try {
             //mSocket = IO.socket("http://chat-ipg.azurewebsites.net");
@@ -89,14 +84,23 @@ public class Conversation extends BaseActivity  {
                     if(!username.equals(ID)){
                         //problema com broadcast to self
 
+
+
+
                         List<ChatData> data = new ArrayList<ChatData>();
+
                         ChatData item = new ChatData();
-                        item.setTime("6:00pm");
+                        SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                        String currentDateTimeString = newFormat.getDateTimeInstance().format(new Date());
+
+                        item.setTime(currentDateTimeString);
                         item.setType("1");
 
                         // IPG - Alteração -------------- Dinis
                         try {
-                            item.setText(encryption.Decrypt(message));
+                            item.setText(message);
+                            // DINIS .. não funciona aqui quando recebo do servidor
+                            // item.setText(new String(encryption.Decrypt(message)));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -109,6 +113,7 @@ public class Conversation extends BaseActivity  {
                             e.printStackTrace();
                         }
                         //text.setText("");
+
                     }
                 }
             });
@@ -144,11 +149,12 @@ public class Conversation extends BaseActivity  {
         mAdapter = new ConversationRecyclerView(this,setData());
         room = getIntent().getExtras().getString("roomName",null);
         ID = getIntent().getExtras().getString("ID",null);
+        myLocation = getIntent().getExtras().getString("Localization",null);
 
         setContentView(R.layout.activity_conversation);
         setupToolbarWithUpNav(R.id.toolbar, "Alterar para API getuser" , R.drawable.ic_action_back);
 
-
+        encryption = new Encryption(room);
 
         // receber conversa do mongodb
         AsyncTask.execute(new Runnable() {
@@ -158,7 +164,8 @@ public class Conversation extends BaseActivity  {
             public void run() {
                 //TODO your background code
                 //retrieve
-                String result =  getJSONFromUrl(room);
+                SharedPreferences settings = getApplication().getSharedPreferences("myPrefs", 0);
+                String result =  Tools.getJSONFromUrl(room,settings);
 
                 try {
                     JSONObject jsonRoot  = new JSONObject(result);
@@ -175,6 +182,8 @@ public class Conversation extends BaseActivity  {
 
 
                         item.setTime( newFormat.format(date));
+
+                        // problemas de enviar para todos no nodeJS
                         String author = jsonData.getJSONObject(i).getJSONObject("author").getString("_id");
                         if (!author.equals(ID)) {
                             item.setType("1");
@@ -255,8 +264,65 @@ public class Conversation extends BaseActivity  {
                 }, 500);
             }
         });
-        send = (Button) findViewById(R.id.bt_send);
 
+        // --- Daey enviar localização
+        send_localization = (ImageButton) findViewById(R.id.bt_attachment_localization);
+        send_localization.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if (!text.getText().equals("")){
+                    List<ChatData> data = new ArrayList<ChatData>();
+                    ChatData item = new ChatData();
+                    String msg= myLocation;
+
+                    item.setType("2");
+                    item.setText(msg);
+                    data.add(item);
+                    mAdapter.addItem(data);
+
+                    // IPG - Alteração -------------- Dinis
+                    try {
+                        msg = encryption.Encrypt(msg, Encryption.MessageType.Encrypted);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        // background para fazer cenas na base de dados mongop
+                        final String finalMsg = msg;
+                        AsyncTask.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                //TODO your background code
+                                // mongoDB save stuff
+                                // IPG - Alteração -------------- Dinis
+                                SharedPreferences settings = getApplication().getSharedPreferences("myPrefs", 0);
+                                Tools.sendReplyToConversation(room, finalMsg, settings);
+                            }
+                        });
+
+                        // IPG - Alteração -------------- Dinis
+                        mSocket.emit("new message", room,msg, ID);
+                        //mSocket.emit("new message", room, text.getText() , ID);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    //mSocket.emit("refresh messages", text.getText().toString());
+
+                    try {
+                        mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() -1);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    text.setText("");
+                }
+            }
+        });
+
+
+        send = (Button) findViewById(R.id.bt_send);
         send.setOnClickListener(new View.OnClickListener() {
             // IPG - Alteração -------------- Dinis
             String msg="";
@@ -288,8 +354,9 @@ public class Conversation extends BaseActivity  {
                             public void run() {
                                 //TODO your background code
                                 // mongoDB save stuff
+                                SharedPreferences settings = getApplication().getSharedPreferences("myPrefs", 0);
                                 // IPG - Alteração -------------- Dinis
-                                sendReplyToConversation(room, msg);
+                                Tools.sendReplyToConversation(room, msg, settings);
                             }
                         });
 
@@ -299,7 +366,7 @@ public class Conversation extends BaseActivity  {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    
+
                     //mSocket.emit("refresh messages", text.getText().toString());
 
                     try {
@@ -339,99 +406,10 @@ public class Conversation extends BaseActivity  {
     }
 
 
-    public String getJSONFromUrl(String ConversationID) {
-        SharedPreferences settings = getApplication().getSharedPreferences("myPrefs", 0);
-        String tokenOK = settings.getString("token", ""/*default value*/);
-        String result ="";
-        try {
-            //Connect
-            // cache problema .... + "?_=" + System.currentTimeMillis()
-            HttpURLConnection urlConnection = (HttpURLConnection) (new URL("http://chat-ipg-04.azurewebsites.net/api/chat/"+ConversationID+ "?_=" + System.currentTimeMillis()).openConnection());
-            //   urlConnection.setDoOutput(false);
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setUseCaches(false);
-
-            urlConnection.setRequestProperty("Content-Type", "application/json");
-            urlConnection.setRequestProperty("Accept", "application/json");
-            urlConnection.setRequestProperty("Authorization", tokenOK);
-
-            urlConnection.connect();
-            urlConnection.setConnectTimeout(10000);
-
-
-            //Read
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
-            String line = null;
-            StringBuilder sb = new StringBuilder();
-            while ((line = bufferedReader.readLine()) != null) {
-                sb.append(line);
-            }
-            bufferedReader.close();
-            result = sb.toString();
-            urlConnection.disconnect();
-
-        } catch (UnsupportedEncodingException e){
-            return result;
-            //  e.printStackTrace();
-        } catch (IOException e) {
-            return result;
-            // e.printStackTrace();
-        }
-
-        return result;
-
-    }
-
-
-    public String sendReplyToConversation(String ConversationID, String msg) {
-        SharedPreferences settings = getApplication().getSharedPreferences("myPrefs", 0);
-        String tokenOK = settings.getString("token", ""/*default value*/);
-
-        String result ="";
-        try {
-            //Connect
-            HttpURLConnection urlConnection = (HttpURLConnection) (new URL("http://chat-ipg-04.azurewebsites.net/api/chat/"+ConversationID).openConnection());
-            urlConnection.setDoOutput(true);
-            urlConnection.setRequestProperty("Accept", "application/json");
-            urlConnection.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
-            urlConnection.setRequestMethod("POST");
-            urlConnection.setRequestProperty("Authorization", tokenOK);
-
-            String params =  "composedMessage="+msg;
-            urlConnection.setRequestProperty("Content-Length", Integer.toString(params.getBytes().length));
-
-            urlConnection.connect();
-            urlConnection.setConnectTimeout(10000);
-
-            //Write
-            OutputStream outputStream = urlConnection.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-            writer.write(params);
-            writer.close();
-            outputStream.close();
-
-            //Read
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
-            String line = null;
-            StringBuilder sb = new StringBuilder();
-            while ((line = bufferedReader.readLine()) != null) {
-                sb.append(line);
-            }
-            bufferedReader.close();
-            result = sb.toString();
 
 
 
-        } catch (UnsupportedEncodingException e){
-            return result;
-            //  e.printStackTrace();
-        } catch (IOException e) {
-            return result;
-            // e.printStackTrace();
-        }
-        return result;
 
-    }
 
 
 }
