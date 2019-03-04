@@ -1,6 +1,7 @@
 package pt.IPG.messenger;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
@@ -50,39 +51,58 @@ import java.util.Locale;
 
 import pt.IPG.messenger.recyclerview.Chat;
 
-public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     TextView chats;
     NavigationView navigationView, navigationViewBottom;
     DrawerLayout drawer;
 
     List<JSONObject> list = new ArrayList<JSONObject>();
-    List<Address> addresses;
+
     ArrayList<String> conversation = new ArrayList<String>();
 
     List<Chat> data = new ArrayList<>();
     SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-    private String myLocation;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        initLocation();
-        getLastLocationNewMethod();
+        Context applicationContext = getApplicationContext();
+        //initLocation(); passei para login
+        SharedPreferences settings = this.getSharedPreferences("myPrefs", 0);
+        Tools.getLastLocationNewMethod(applicationContext, settings);
 
         setupToolbar(R.id.toolbar, "Messages");
 
+        getContact();
+
+        drawer = findViewById(R.id.drawer_layout);
+        final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        navigationViewBottom = findViewById(R.id.nav_view_bottom);
+        navigationViewBottom.setNavigationItemSelectedListener(this);
+
+        chats =(TextView) MenuItemCompat.getActionView(navigationView.getMenu().
+                findItem(R.id.nav_chats));
+        initializeCountDrawer();
+    }
+
+    private void getContact() {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 //TODO your background code
-
-                //retrieve
                 SharedPreferences settings = MainActivity.this.getSharedPreferences("myPrefs", 0);
-                String auth_token_string = settings.getString("token", ""/*default value*/);
+                //retrieve
+                 String auth_token_string = settings.getString("token", ""/*default value*/);
                 String token = auth_token_string;
 
                 JSONObject request = new JSONObject();
@@ -118,6 +138,10 @@ public class MainActivity extends BaseActivity
                     // bundle
                     Bundle b = new Bundle();
                     b.putStringArrayList("Contactos", conversation);
+
+                    String myLocation = "";
+                    myLocation = settings.getString("lyLocation", ""/*default value*/);
+
                     b.putString("Localization",myLocation);
 
                     // enviar lista de contactos
@@ -131,117 +155,15 @@ public class MainActivity extends BaseActivity
                 }
             }
         });
-
-        drawer = findViewById(R.id.drawer_layout);
-        final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        navigationViewBottom = findViewById(R.id.nav_view_bottom);
-        navigationViewBottom.setNavigationItemSelectedListener(this);
-
-        chats =(TextView) MenuItemCompat.getActionView(navigationView.getMenu().
-                findItem(R.id.nav_chats));
-        initializeCountDrawer();
     }
 
 
-    private void initLocation() {
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION}, 1000);
-        } else {
-            // faqzer cenas depois de aceitar
-        }
-    }
-
-    /// ---------------------------------- FIM GOOGLE GPS --------------------------
-
-    //Get last known location coordinates
-    private void getLastLocationNewMethod() {
-        FusedLocationProviderClient mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            //session.saveCurrentLocation("Everywhere");
-            return;
-        }
-        mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                // GPS location can be null if GPS is switched off
-                if (location != null) {
-                    double myLat = location.getLatitude();
-                    double myLon = location.getLongitude();
-
-                    getAddress(myLat, myLon);
-
-
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("MapDemoActivity", "Error trying to get last GPS location");
-                e.printStackTrace();
-
-            }
-        });
-    }
-
-    //get location name from coordinates
-    public void getAddress(double lat, double lng) {
-        String currentLocation = "";
-
-        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.ENGLISH);
-        try {
-
-            addresses = geocoder.getFromLocation(lat, lng, 1);
-
-            Address obj = addresses.get(0);
-            String add = obj.getAddressLine(0);
-            add = add + "\n" + obj.getCountryName();
-          //  add = add + "\n" + obj.getCountryCode();
-          //  add = add + "\n" + obj.getAdminArea();
-          //  add = add + "\n" + obj.getPostalCode();
-          //  add = add + "\n" + obj.getSubAdminArea();
-          //  add = add + "\n" + obj.getLocality();
-          //  add = add + "\n" + obj.getSubThoroughfare();
-            add = add + "\n" + "Lat:"+lat;
-            add = add + "\n" + "Lng:"+lng;
-
-            myLocation = add;
-            Log.v("IGA", "Address" + add);
-
-
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-
-    /// ---------------------------------- FIM GOOGLE GPS --------------------------
 
 
 
     public String getJSONFromUrl() {
-        SharedPreferences settings = MainActivity.this.getSharedPreferences("myPrefs", 0);
+        SharedPreferences settings = this.getSharedPreferences("myPrefs", 0);
         String tokenOK = settings.getString("token", ""/*default value*/);
 
         //String tokenOK = "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1YzY2OWU4YWU0M2UzZDNlMjQ0ZjRhZTciLCJmaXJzdE5hbWUiOiJEYW5pZWwiLCJsYXN0TmFtZSI6Ik1lbmRlcyIsImVtYWlsIjoiZGFuaWVsQGVwdC5wdCIsInJvbGUiOiJNZW1iZXIiLCJpYXQiOjE1NTA0OTQ3NDAsImV4cCI6MTU1MTA5OTU0MH0.pNmjguEXsaHDBIp1Hwt5BuzF74iSlFqsqMZCrendwxk";

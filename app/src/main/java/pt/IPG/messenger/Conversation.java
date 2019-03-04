@@ -93,17 +93,23 @@ public class Conversation extends BaseActivity  {
                     if(!username.equals(ID)){
                         //problema com broadcast to self
 
+
+
+
                         List<ChatData> data = new ArrayList<ChatData>();
+
                         ChatData item = new ChatData();
+                        SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                        String currentDateTimeString = newFormat.getDateTimeInstance().format(new Date());
 
-
-                        // Foi ALterado no MASTER anterior
-                        item.setTime("6:00pm");
+                        item.setTime(currentDateTimeString);
                         item.setType("1");
 
                         // IPG - Alteração -------------- Dinis
                         try {
-                            item.setText(encryption.Decrypt(message));
+                            item.setText(message);
+                            // DINIS .. não funciona aqui quando recebo do servidor
+                            // item.setText(new String(encryption.Decrypt(message)));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -116,6 +122,7 @@ public class Conversation extends BaseActivity  {
                             e.printStackTrace();
                         }
                         //text.setText("");
+
                     }
                 }
             });
@@ -166,7 +173,8 @@ public class Conversation extends BaseActivity  {
             public void run() {
                 //TODO your background code
                 //retrieve
-                String result =  getJSONFromUrl(room);
+                SharedPreferences settings = getApplication().getSharedPreferences("myPrefs", 0);
+                String result =  Tools.getJSONFromUrl(room,settings);
 
                 try {
                     JSONObject jsonRoot  = new JSONObject(result);
@@ -298,7 +306,8 @@ public class Conversation extends BaseActivity  {
                                 //TODO your background code
                                 // mongoDB save stuff
                                 // IPG - Alteração -------------- Dinis
-                                sendReplyToConversation(room, finalMsg);
+                                SharedPreferences settings = getApplication().getSharedPreferences("myPrefs", 0);
+                                Tools.sendReplyToConversation(room, finalMsg, settings);
                             }
                         });
 
@@ -354,8 +363,9 @@ public class Conversation extends BaseActivity  {
                             public void run() {
                                 //TODO your background code
                                 // mongoDB save stuff
+                                SharedPreferences settings = getApplication().getSharedPreferences("myPrefs", 0);
                                 // IPG - Alteração -------------- Dinis
-                                sendReplyToConversation(room, msg);
+                                Tools.sendReplyToConversation(room, msg, settings);
                             }
                         });
 
@@ -405,99 +415,10 @@ public class Conversation extends BaseActivity  {
     }
 
 
-    public String getJSONFromUrl(String ConversationID) {
-        SharedPreferences settings = getApplication().getSharedPreferences("myPrefs", 0);
-        String tokenOK = settings.getString("token", ""/*default value*/);
-        String result ="";
-        try {
-            //Connect
-            // cache problema .... + "?_=" + System.currentTimeMillis()
-            HttpURLConnection urlConnection = (HttpURLConnection) (new URL("http://chat-ipg-04.azurewebsites.net/api/chat/"+ConversationID+ "?_=" + System.currentTimeMillis()).openConnection());
-            //   urlConnection.setDoOutput(false);
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setUseCaches(false);
-
-            urlConnection.setRequestProperty("Content-Type", "application/json");
-            urlConnection.setRequestProperty("Accept", "application/json");
-            urlConnection.setRequestProperty("Authorization", tokenOK);
-
-            urlConnection.connect();
-            urlConnection.setConnectTimeout(10000);
-
-
-            //Read
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
-            String line = null;
-            StringBuilder sb = new StringBuilder();
-            while ((line = bufferedReader.readLine()) != null) {
-                sb.append(line);
-            }
-            bufferedReader.close();
-            result = sb.toString();
-            urlConnection.disconnect();
-
-        } catch (UnsupportedEncodingException e){
-            return result;
-            //  e.printStackTrace();
-        } catch (IOException e) {
-            return result;
-            // e.printStackTrace();
-        }
-
-        return result;
-
-    }
-
-
-    public String sendReplyToConversation(String ConversationID, String msg) {
-        SharedPreferences settings = getApplication().getSharedPreferences("myPrefs", 0);
-        String tokenOK = settings.getString("token", ""/*default value*/);
-
-        String result ="";
-        try {
-            //Connect
-            HttpURLConnection urlConnection = (HttpURLConnection) (new URL("http://chat-ipg-04.azurewebsites.net/api/chat/"+ConversationID).openConnection());
-            urlConnection.setDoOutput(true);
-            urlConnection.setRequestProperty("Accept", "application/json");
-            urlConnection.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
-            urlConnection.setRequestMethod("POST");
-            urlConnection.setRequestProperty("Authorization", tokenOK);
-
-            String params =  "composedMessage="+msg;
-            urlConnection.setRequestProperty("Content-Length", Integer.toString(params.getBytes().length));
-
-            urlConnection.connect();
-            urlConnection.setConnectTimeout(10000);
-
-            //Write
-            OutputStream outputStream = urlConnection.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-            writer.write(params);
-            writer.close();
-            outputStream.close();
-
-            //Read
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
-            String line = null;
-            StringBuilder sb = new StringBuilder();
-            while ((line = bufferedReader.readLine()) != null) {
-                sb.append(line);
-            }
-            bufferedReader.close();
-            result = sb.toString();
 
 
 
-        } catch (UnsupportedEncodingException e){
-            return result;
-            //  e.printStackTrace();
-        } catch (IOException e) {
-            return result;
-            // e.printStackTrace();
-        }
-        return result;
 
-    }
 
 
 }
