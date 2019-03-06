@@ -2,14 +2,13 @@ package pt.IPG.messenger;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
+
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
+
 
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,8 +22,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 import java.net.URISyntaxException;
@@ -191,26 +188,7 @@ public class Conversation extends BaseActivity  {
         });
     }
 
-    /**
-     * reduces the size of the image
-     * @param image
-     * @param maxSize
-     * @return
-     */
-    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
-        int width = image.getWidth();
-        int height = image.getHeight();
 
-        float bitmapRatio = (float)width / (float) height;
-        if (bitmapRatio > 1) {
-            width = maxSize;
-            height = (int) (width / bitmapRatio);
-        } else {
-            height = maxSize;
-            width = (int) (height * bitmapRatio);
-        }
-        return Bitmap.createScaledBitmap(image, width, height, true);
-    }
 
     private void onPhotosReturned(List<File> returnedPhotos) {
         photos.addAll(returnedPhotos);
@@ -223,22 +201,9 @@ public class Conversation extends BaseActivity  {
 
         item.setTime(newFormat.format(currentTime));
 
+        String encodedImage = Tools.getPictureString(returnedPhotos);
 
 
-
-        //converter imagem em base64 ---- Aqui
-        Bitmap bm = BitmapFactory.decodeFile(returnedPhotos.get(returnedPhotos.size()-1).toString());
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        Bitmap converetdImage = getResizedBitmap(bm, 350);
-        Bitmap.createScaledBitmap(converetdImage, 350, 350, true);
-
-
-        converetdImage.compress(Bitmap.CompressFormat.JPEG, 60, baos); //bm is the bitmap object
-        byte[] b = baos.toByteArray();
-
-        String encodedImage = "5_";
-        encodedImage += Base64.encodeToString(b, Base64.DEFAULT);
         // já há string ----
         String msg = encodedImage;
 
@@ -289,6 +254,7 @@ public class Conversation extends BaseActivity  {
         //   imagesAdapter.notifyDataSetChanged();
      //   recyclerView.scrollToPosition(photos.size() - 1);
     }
+
 
     //-------------------------------------------------------------------
 

@@ -3,11 +3,14 @@ package pt.IPG.messenger;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.util.Base64;
 import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -17,6 +20,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -204,5 +209,46 @@ public class Tools {
 
 
     /// ---------------------------------- FIM GOOGLE GPS --------------------------
+
+
+    @NonNull
+    public static String getPictureString(List<File> returnedPhotos) {
+        //converter imagem em base64 ---- Aqui
+        Bitmap bm = BitmapFactory.decodeFile(returnedPhotos.get(returnedPhotos.size()-1).toString());
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        Bitmap converetdImage = getResizedBitmap(bm, 350);
+        Bitmap.createScaledBitmap(converetdImage, 350, 350, true);
+
+
+        converetdImage.compress(Bitmap.CompressFormat.JPEG, 60, baos); //bm is the bitmap object
+        byte[] b = baos.toByteArray();
+
+        String encodedImage = "5_";
+        encodedImage += Base64.encodeToString(b, Base64.DEFAULT);
+        return encodedImage;
+    }
+
+
+    /**
+     * reduces the size of the image
+     * @param image
+     * @param maxSize
+     * @return
+     */
+    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float)width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
+    }
 
 }
