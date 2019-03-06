@@ -31,12 +31,12 @@ android:paddingRight="16dp">
 
         <ImageView
             android:id="@+id/image_view"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="150dp"
             android:layout_gravity="center"
             android:adjustViewBounds="true"
-            tools:background="@tools:sample/backgrounds/scenic"
             android:scaleType="fitXY"
+            tools:background="@tools:sample/backgrounds/scenic"
             tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
 
