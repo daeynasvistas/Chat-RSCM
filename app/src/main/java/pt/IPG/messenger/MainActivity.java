@@ -49,6 +49,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import pl.aprilapps.easyphotopicker.EasyImage;
+import pl.tajchert.nammu.Nammu;
+import pl.tajchert.nammu.PermissionCallback;
 import pt.IPG.messenger.recyclerview.Chat;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -69,6 +72,32 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Nammu.init(this);
+
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            Nammu.askForPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, new PermissionCallback() {
+                @Override
+                public void permissionGranted() {
+                    //Nothing, this sample saves to Public gallery so it needs permission
+                }
+
+                @Override
+                public void permissionRefused() {
+                    finish();
+                }
+            });
+        }
+
+        EasyImage.configuration(this)
+                .setImagesFolderName("EasyImage_sample")
+                .setCopyTakenPhotosToPublicGalleryAppFolder(true)
+                .setCopyPickedImagesToPublicGalleryAppFolder(true)
+                .setAllowMultiplePickInGallery(true);
+
+        //checkGalleryAppAvailability();
+
         Context applicationContext = getApplicationContext();
         //initLocation(); passei para login
         SharedPreferences settings = this.getSharedPreferences("myPrefs", 0);

@@ -22,7 +22,7 @@ https://documenter.getpostman.com/view/1885494/S11Bxgv2#6bf6dd63-7868-4b61-9859-
 ### Funcionalidades - Serviços
 - [x] Troca de texto
 - [ ] Suporte de voz
-- [ ] Troca de ficheiros
+- [x] Troca de ficheiros
 - [x] Envio localização GPS
 
 ### Requisitos de Modos de comunicação
@@ -44,8 +44,16 @@ https://documenter.getpostman.com/view/1885494/S11Bxgv2#6bf6dd63-7868-4b61-9859-
 
 
 ## Version
-v0.2
+v0.6
 
+![1](https://user-images.githubusercontent.com/2634610/53902629-6e56b300-4039-11e9-8a4d-6931c7688f27.png)
+![2](https://user-images.githubusercontent.com/2634610/53902626-6dbe1c80-4039-11e9-9e1c-4fca8d6f417c.png)
+
+v0.5
+
+![screenshot_20190306-172509](https://user-images.githubusercontent.com/2634610/53901257-76f9ba00-4036-11e9-8354-7c47436ce9cf.png)
+
+v0.2
 
 ![1_chat](https://user-images.githubusercontent.com/2634610/53040183-bb9f2600-3478-11e9-94c1-e95d8fafb17e.png)
 ![2_chat](https://user-images.githubusercontent.com/2634610/53040184-bb9f2600-3478-11e9-8bed-4a94e5375017.png)

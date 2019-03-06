@@ -31,6 +31,7 @@
             android:layout_alignParentRight="true"
             android:stateListAnimator="@null"
             android:layout_centerInParent="true"/>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -42,11 +43,23 @@
                 android:id="@+id/bt_attachment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_attachment"
-                android:padding="@dimen/space10"
                 android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
                 android:background="@android:color/transparent"
-                android:layout_centerVertical="true"/>
+                android:padding="@dimen/space10"
+                app:srcCompat="@android:drawable/ic_menu_gallery" />
+
+            <ImageButton
+                android:id="@+id/bt_camera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="40dp"
+                android:background="@android:color/transparent"
+                android:padding="@dimen/space10"
+                app:srcCompat="@android:drawable/ic_menu_camera" />
+
 
             <ImageButton
                 android:id="@+id/bt_attachment_localization"
@@ -54,16 +67,16 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="30dp"
+                android:layout_marginRight="80dp"
                 android:background="@android:color/transparent"
                 android:padding="@dimen/space10"
                 app:srcCompat="@android:drawable/ic_menu_mapmode" />
 
             <EditText
                 android:id="@+id/et_message"
-                android:layout_width="257dp"
+                android:layout_width="228dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="42dp"
+                android:layout_marginRight="64dp"
                 android:layout_toLeftOf="@id/bt_attachment"
                 android:background="@android:color/transparent"
                 android:hint="Enter your message"
