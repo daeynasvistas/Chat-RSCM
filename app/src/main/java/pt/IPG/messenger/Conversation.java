@@ -482,6 +482,13 @@ public class Conversation extends BaseActivity  {
         });
 
 
+        findViewById(R.id.bt_attachment).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /** Some devices such as Samsungs which have their own gallery app require write permission. Testing is advised! */
+                EasyImage.openGallery(Conversation.this, 0);
+            }
+        });
 
 
 
@@ -544,7 +551,7 @@ public class Conversation extends BaseActivity  {
 
 
 
-
+         /*
         // --- Luis enviar imagem
         send_image = (ImageButton) findViewById(R.id.bt_attachment);
         send_image.setOnClickListener(new View.OnClickListener() {
@@ -552,7 +559,7 @@ public class Conversation extends BaseActivity  {
 
             @Override
             public void onClick(View view) {
-         /*                if (!text.getText().equals("")){
+               if (!text.getText().equals("")){
                     List<ChatData> data = new ArrayList<ChatData>();
                     ChatData item = new ChatData();
 
@@ -606,12 +613,12 @@ public class Conversation extends BaseActivity  {
                         e.printStackTrace();
                     }
                     text.setText("");
-                }   */
+                }
             }
 
         });
 
-
+        */
 
 
         send = (Button) findViewById(R.id.bt_send);
