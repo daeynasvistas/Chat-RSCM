@@ -31,6 +31,7 @@
             android:layout_alignParentRight="true"
             android:stateListAnimator="@null"
             android:layout_centerInParent="true"/>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -49,12 +50,24 @@
                 android:layout_centerVertical="true"/>
 
             <ImageButton
-                android:id="@+id/bt_attachment_localization"
+                android:id="@+id/bt_camera"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="30dp"
+                android:background="@android:color/transparent"
+                android:padding="@dimen/space10"
+                app:srcCompat="@drawable/ic_menu_camera" />
+
+
+            <ImageButton
+                android:id="@+id/bt_attachment_localization"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="60dp"
                 android:background="@android:color/transparent"
                 android:padding="@dimen/space10"
                 app:srcCompat="@android:drawable/ic_menu_mapmode" />
