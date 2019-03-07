@@ -15,7 +15,11 @@ import android.widget.ImageButton;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+
+
 import java.io.File;
+
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -46,7 +50,7 @@ public class Conversation extends BaseActivity  {
     private ImageButton send_image;
 
     // IPG - Alteração -------------- Dinis
-    private Encryption encryption = new Encryption();
+    private Encryption encryption;
 
     String room = "";
     String ID = "";
@@ -292,7 +296,7 @@ public class Conversation extends BaseActivity  {
         setContentView(R.layout.activity_conversation);
         setupToolbarWithUpNav(R.id.toolbar, "Alterar para API getuser" , R.drawable.ic_action_back);
 
-
+        encryption = new Encryption(room);
 
         // receber conversa do mongodb
         AsyncTask.execute(new Runnable() {
@@ -614,7 +618,7 @@ public class Conversation extends BaseActivity  {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    
+
                     //mSocket.emit("refresh messages", text.getText().toString());
 
                     try {

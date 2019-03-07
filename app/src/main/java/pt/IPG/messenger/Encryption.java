@@ -65,9 +65,9 @@ public class Encryption {
     /**
      * Instantiates the class Encryption by generating a secret key
      */
-    public Encryption() {
+    public Encryption(String key) {
         try {
-            sks = new SecretKeySpec(SHA1("Chat-RSCM").substring(0,16).getBytes(), "AES");
+            sks = new SecretKeySpec(SHA1(key).substring(0,16).getBytes(), "AES");
         } catch (Exception e) {
             Log.e(TAG, "AES secret key spec error");
         }
