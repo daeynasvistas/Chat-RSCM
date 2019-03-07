@@ -1,23 +1,36 @@
 package pt.IPG.messenger;
 
-import android.content.Intent;
+import android.Manifest;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.MenuItemCompat;
-import android.view.Gravity;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
+
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,14 +42,19 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-import pt.IPG.messenger.R;
+import pl.aprilapps.easyphotopicker.EasyImage;
+import pl.tajchert.nammu.Nammu;
+import pl.tajchert.nammu.PermissionCallback;
 import pt.IPG.messenger.recyclerview.Chat;
 
-public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     TextView chats;
     NavigationView navigationView, navigationViewBottom;
     DrawerLayout drawer;
@@ -46,22 +64,74 @@ public class MainActivity extends BaseActivity
     ArrayList<String> conversation = new ArrayList<String>();
 
     List<Chat> data = new ArrayList<>();
+    SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Nammu.init(this);
+
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            Nammu.askForPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, new PermissionCallback() {
+                @Override
+                public void permissionGranted() {
+                    //Nothing, this sample saves to Public gallery so it needs permission
+                }
+
+                @Override
+                public void permissionRefused() {
+                    finish();
+                }
+            });
+        }
+
+        EasyImage.configuration(this)
+                .setImagesFolderName("EasyImage_sample")
+                .setCopyTakenPhotosToPublicGalleryAppFolder(true)
+                .setCopyPickedImagesToPublicGalleryAppFolder(true)
+                .setAllowMultiplePickInGallery(true);
+
+        //checkGalleryAppAvailability();
+
+        Context applicationContext = getApplicationContext();
+        //initLocation(); passei para login
+        SharedPreferences settings = this.getSharedPreferences("myPrefs", 0);
+        Tools.getLastLocationNewMethod(applicationContext, settings);
+
         setupToolbar(R.id.toolbar, "Messages");
 
+        getContact();
+
+        drawer = findViewById(R.id.drawer_layout);
+        final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        navigationViewBottom = findViewById(R.id.nav_view_bottom);
+        navigationViewBottom.setNavigationItemSelectedListener(this);
+
+        chats =(TextView) MenuItemCompat.getActionView(navigationView.getMenu().
+                findItem(R.id.nav_chats));
+        initializeCountDrawer();
+    }
+
+    private void getContact() {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 //TODO your background code
-
-                //retrieve
                 SharedPreferences settings = MainActivity.this.getSharedPreferences("myPrefs", 0);
-                String auth_token_string = settings.getString("token", ""/*default value*/);
+                //retrieve
+                 String auth_token_string = settings.getString("token", ""/*default value*/);
                 String token = auth_token_string;
 
                 JSONObject request = new JSONObject();
@@ -76,18 +146,32 @@ public class MainActivity extends BaseActivity
                         list.add(array.getJSONArray(i).getJSONObject(0));
                         try {
                             String conver = String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("conversationId"));
-                           // conversation.add(String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("conversationId")));
+                            String updateDate = String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("updatedAt"));
+
+                            // conversation.add(String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("conversationId")));
                             conversation.add(conver);
+                            //2019-03-02T16:25:43.693Z
+                            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+                            // SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                            Date date =  format.parse(updateDate.replaceAll("Z$", "+0000"));
+                            String dateString = newFormat.format(date);
+
+                             conversation.add(dateString);
                         } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (ParseException e) {
                             e.printStackTrace();
                         }
                     }
 
-
-
                     // bundle
                     Bundle b = new Bundle();
                     b.putStringArrayList("Contactos", conversation);
+
+                    String myLocation = "";
+                    myLocation = settings.getString("lyLocation", ""/*default value*/);
+
+                    b.putString("Localization",myLocation);
 
                     // enviar lista de contactos
                     FragmentTransaction ft;
@@ -95,40 +179,20 @@ public class MainActivity extends BaseActivity
                     fragmentHome.setArguments(b);
                     ft = getSupportFragmentManager().beginTransaction();
                     ft.add(R.id.frameLayout, fragmentHome).commit();
-
-
-
                 } catch (JSONException e) {
                     //   System.out.println(e.getMessage());
                 }
-
-
             }
         });
-
-
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        navigationViewBottom = (NavigationView) findViewById(R.id.nav_view_bottom);
-        navigationViewBottom.setNavigationItemSelectedListener(this);
-
-
-        chats =(TextView) MenuItemCompat.getActionView(navigationView.getMenu().
-                findItem(R.id.nav_chats));
-        initializeCountDrawer();
-
     }
 
 
+
+
+
+
     public String getJSONFromUrl() {
-        SharedPreferences settings = MainActivity.this.getSharedPreferences("myPrefs", 0);
+        SharedPreferences settings = this.getSharedPreferences("myPrefs", 0);
         String tokenOK = settings.getString("token", ""/*default value*/);
 
         //String tokenOK = "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1YzY2OWU4YWU0M2UzZDNlMjQ0ZjRhZTciLCJmaXJzdE5hbWUiOiJEYW5pZWwiLCJsYXN0TmFtZSI6Ik1lbmRlcyIsImVtYWlsIjoiZGFuaWVsQGVwdC5wdCIsInJvbGUiOiJNZW1iZXIiLCJpYXQiOjE1NTA0OTQ3NDAsImV4cCI6MTU1MTA5OTU0MH0.pNmjguEXsaHDBIp1Hwt5BuzF74iSlFqsqMZCrendwxk";
@@ -145,7 +209,6 @@ public class MainActivity extends BaseActivity
             urlConnection.connect();
             urlConnection.setConnectTimeout(10000);
 
-
             //Read
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
             String line = null;
@@ -155,8 +218,6 @@ public class MainActivity extends BaseActivity
             }
             bufferedReader.close();
             result = sb.toString();
-
-
         } catch (UnsupportedEncodingException e){
             return result;
             //  e.printStackTrace();
@@ -165,7 +226,6 @@ public class MainActivity extends BaseActivity
             // e.printStackTrace();
         }
         return result;
-
     }
 
 
@@ -182,7 +242,7 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -223,23 +283,15 @@ public class MainActivity extends BaseActivity
             ft.replace(R.id.frameLayout, fragmentHome).commit();
         } else if (id == R.id.nav_trash) {
         } else if (id == R.id.nav_settings) {
-        } else if (id == R.id.nav_logout) {
-        }
+        } else if (id == R.id.nav_logout) { }
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         return super.onPrepareOptionsMenu(menu);
     }
-
-    public void Call(View view) {
-
-
-            Intent intent = new Intent(MainActivity.this, VoiceChatViewActivity.class);
-            startActivity(intent);
-            finish();
-        }
 
 }
