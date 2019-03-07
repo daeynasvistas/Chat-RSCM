@@ -6,13 +6,26 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="pt.IPG.messenger.MainActivity">
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         app:elevation="0dp">
+
         <include
             android:id="@+id/toolbar"
-            layout="@layout/toolbar"/>
+            layout="@layout/toolbar" />
     </android.support.design.widget.AppBarLayout>
+
     <include layout="@layout/content_conversation" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="310dp"
+        android:layout_marginTop="7dp"
+        android:onClick="Call"
+        app:srcCompat="@android:drawable/stat_sys_phone_call"
+        tools:ignore="MissingConstraints" />
 </android.support.design.widget.CoordinatorLayout>

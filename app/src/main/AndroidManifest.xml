@@ -16,6 +16,9 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -25,12 +28,21 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"></activity>
+
+        <activity
+            android:name=".VoiceChatViewActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity">
+            </meta-data>
+        </activity>
+
         <activity
             android:name=".Splash"
             android:theme="@style/AppThemeFull">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -44,6 +56,9 @@
         <activity
             android:name=".Conversation"
             android:theme="@style/AppTheme.Trans" />
+
+
+
     </application>
 
 </manifest>
