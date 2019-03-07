@@ -22,4 +22,5 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="agora_app_id" translatable="false">25f437e3cdbf4a8d8a7fd969175435d4</string>
 </resources>

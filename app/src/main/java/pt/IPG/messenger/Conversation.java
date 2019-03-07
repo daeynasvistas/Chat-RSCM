@@ -671,11 +671,10 @@ public class Conversation extends BaseActivity  {
         return true;
     }
 
+    public void Call(View view) {
 
-
-
-
-
-
-
+        Intent intent = new Intent(Conversation.this, VoiceChatViewActivity.class);
+        startActivity(intent);
+        finish();
+    }
 }

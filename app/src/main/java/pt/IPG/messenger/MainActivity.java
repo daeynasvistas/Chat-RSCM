@@ -5,6 +5,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
@@ -62,6 +63,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     TextView chats;
     NavigationView navigationView, navigationViewBottom;
     DrawerLayout drawer;
+    public static String conver;
 
     List<JSONObject> list = new ArrayList<JSONObject>();
 
@@ -79,7 +81,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         Nammu.init(this);
 
-        mProgressView = findViewById(R.id.Contact_progress);
+        //mProgressView = findViewById(R.id.Contact_progress);
 
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
@@ -155,6 +157,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                             String conver = String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("conversationId"));
                             String updateDate = String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("updatedAt"));
 
+                            conver = String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("conversationId"));
                             // conversation.add(String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("conversationId")));
                             conversation.add(conver);
                             //2019-03-02T16:25:43.693Z
@@ -193,10 +196,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
         });
     }
-
-
-
-
 
     public String getJSONFromUrl() {
         SharedPreferences settings = this.getSharedPreferences("myPrefs", 0);
@@ -301,4 +300,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return super.onPrepareOptionsMenu(menu);
     }
 
+
+    public void Call(View view) {
+
+        Intent intent = new Intent(MainActivity.this, VoiceChatViewActivity.class);
+        startActivity(intent);
+        finish();
+    }
 }
