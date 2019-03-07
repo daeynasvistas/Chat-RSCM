@@ -38,6 +38,7 @@ public class HolderYou extends RecyclerView.ViewHolder {
     public void setChatText(TextView chatText) {
         this.chatText = chatText;
     }
+
     public ImageView getImageView() {
         return imageView;
     }
@@ -45,4 +46,5 @@ public class HolderYou extends RecyclerView.ViewHolder {
     public void setImageView(ImageView imageView) {
         this.imageView = imageView;
     }
+
 }

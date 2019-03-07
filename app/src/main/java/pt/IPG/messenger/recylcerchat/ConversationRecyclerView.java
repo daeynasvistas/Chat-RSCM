@@ -59,10 +59,7 @@ public class ConversationRecyclerView extends RecyclerView.Adapter<RecyclerView.
             return YOU;
         }else if (items.get(position).getType().equals("2")) {
             return ME;
-        }else if (items.get(position).getType().equals("3")) {
-            return IMAGE_ME;
-        }else if (items.get(position).getType().equals("4")) {
-        return IMAGE_YOU;
+
     }
         return -1;
     }
@@ -105,14 +102,6 @@ public class ConversationRecyclerView extends RecyclerView.Adapter<RecyclerView.
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         switch (viewHolder.getItemViewType()) {
-          //  case IMAGE_ME:
-          //      HolderMe vh3 = (HolderMe) viewHolder;
-          //      configureViewHolder4(vh3, position);
-          //      break;
-          //  case IMAGE_YOU:
-          //      HolderYou vh4 = (HolderYou) viewHolder;
-          //      configureViewHolder5(vh4, position);
-          //      break;
             case DATE:
                 HolderDate vh1 = (HolderDate) viewHolder;
                 configureViewHolder1(vh1, position);

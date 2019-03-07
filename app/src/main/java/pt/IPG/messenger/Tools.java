@@ -236,7 +236,7 @@ public class Tools {
      * @param maxSize
      * @return
      */
-    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+    public static Bitmap getResizedBitmap(Bitmap image, int maxSize) {
         int width = image.getWidth();
         int height = image.getHeight();
 

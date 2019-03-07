@@ -98,21 +98,24 @@ public class Conversation extends BaseActivity  {
                         String currentDateTimeString = newFormat.getDateTimeInstance().format(new Date());
 
                         item.setTime(currentDateTimeString);
+                        // IPG - Alteração -------------- Dinis
+                        try {
+                            //item.setText(message);
+                            message = encryption.Decrypt(message);
+                            // DINIS .. não funciona aqui quando recebo do servidor
+                            item.setText(new String(message));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
 
                         // luis image
                         if (message.startsWith("5_")){
                               message.substring(2);
-                              item.setType("3");
+                              //item.setType("1");
                         }else item.setType("1");
 
-                        // IPG - Alteração -------------- Dinis
-                        try {
-                            item.setText(message);
-                            // DINIS .. não funciona aqui quando recebo do servidor
-                             item.setText(new String(encryption.Decrypt(message)));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+
 
                         data.add(item);
                         mAdapter.addItem(data);
@@ -397,6 +400,8 @@ public class Conversation extends BaseActivity  {
             @Override
             public void run() {
                 try {
+
+                    // todo BUG "Invalid target position"
                     mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
                 } catch (Exception e) {
                     e.printStackTrace();
