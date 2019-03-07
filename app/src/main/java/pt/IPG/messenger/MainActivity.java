@@ -1,6 +1,9 @@
 package pt.IPG.messenger;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -24,6 +27,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -65,7 +69,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     List<Chat> data = new ArrayList<>();
     SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
+    private View mProgressView;
 
 
     @Override
@@ -74,6 +78,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setContentView(R.layout.activity_main);
 
         Nammu.init(this);
+
+        mProgressView = findViewById(R.id.Contact_progress);
 
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
@@ -106,6 +112,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setupToolbar(R.id.toolbar, "Messages");
 
         getContact();
+
 
         drawer = findViewById(R.id.drawer_layout);
         final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -179,13 +186,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     fragmentHome.setArguments(b);
                     ft = getSupportFragmentManager().beginTransaction();
                     ft.add(R.id.frameLayout, fragmentHome).commit();
+
                 } catch (JSONException e) {
                     //   System.out.println(e.getMessage());
                 }
             }
         });
     }
-
 
 
 
