@@ -6,14 +6,13 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.MenuItemCompat;
-import android.view.Gravity;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +31,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import pt.IPG.messenger.R;
 import pt.IPG.messenger.recyclerview.Chat;
 
 public class MainActivity extends BaseActivity
@@ -46,6 +44,8 @@ public class MainActivity extends BaseActivity
     ArrayList<String> conversation = new ArrayList<String>();
 
     List<Chat> data = new ArrayList<>();
+
+    public static String conver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +75,7 @@ public class MainActivity extends BaseActivity
                     for (int i = 0; i < jsonData.length(); i++) {
                         list.add(array.getJSONArray(i).getJSONObject(0));
                         try {
-                            String conver = String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("conversationId"));
+                            conver = String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("conversationId"));
                            // conversation.add(String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("conversationId")));
                             conversation.add(conver);
                         } catch (JSONException e) {
@@ -126,6 +126,12 @@ public class MainActivity extends BaseActivity
 
     }
 
+/*    private static String ConverForCall(String conver) {
+        conver = String.valueOf(array.getJSONArray(i).getJSONObject(0).getString("conversationId"));
+        onCreate(){
+            this.string = tring.valueOf(array.getJSONArray(i).getJSONObject(0).getString("conversationId"));;
+
+    }}*/
 
     public String getJSONFromUrl() {
         SharedPreferences settings = MainActivity.this.getSharedPreferences("myPrefs", 0);

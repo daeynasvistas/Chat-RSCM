@@ -221,7 +221,7 @@ public class Conversation extends BaseActivity  {
 
         //--fim receber conversas
         // IPG - Alteração -------------- Dinis
-        encryption = new Encryption();
+        encryption = new Encryption(room);
 
         // IPG - Alteração -------------- Daey
         mSocket.emit("enter conversation", room);

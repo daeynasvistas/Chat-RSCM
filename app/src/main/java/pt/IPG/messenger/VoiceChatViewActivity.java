@@ -160,8 +160,10 @@ public class VoiceChatViewActivity extends AppCompatActivity {
     }
 
 
+
     private void joinChannel() {
-        mRtcEngine.joinChannel(null, "voiceDemoChannel1", "Extra Optional Data", 0); // if you do not specify the uid, we will generate the uid for you
+        Log.i("INFO",MainActivity.conver);
+        mRtcEngine.joinChannel(null, MainActivity.conver, "Extra Optional Data", 0); // if you do not specify the uid, we will generate the uid for you
     }
 
 
