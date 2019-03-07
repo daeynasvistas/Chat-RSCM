@@ -112,7 +112,7 @@ public class Conversation extends BaseActivity  {
                         // luis image
                         if (message.startsWith("5_")){
                               message.substring(2);
-                              //item.setType("1");
+                              item.setType("1");
                         }else item.setType("1");
 
 
@@ -124,7 +124,7 @@ public class Conversation extends BaseActivity  {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        //text.setText("");
+                        text.setText("");
 
                     }
                 }
@@ -291,7 +291,7 @@ public class Conversation extends BaseActivity  {
             photos = (ArrayList<File>) savedInstanceState.getSerializable(PHOTOS_KEY);
         }
 
-        mAdapter = new ConversationRecyclerView(this,setData(),null);
+        mAdapter = new ConversationRecyclerView(this,setData());
         room = getIntent().getExtras().getString("roomName",null);
         ID = getIntent().getExtras().getString("ID",null);
         myLocation = getIntent().getExtras().getString("Localization",null);
@@ -300,6 +300,12 @@ public class Conversation extends BaseActivity  {
         setupToolbarWithUpNav(R.id.toolbar, "Alterar para API getuser" , R.drawable.ic_action_back);
 
         encryption = new Encryption(room);
+
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setAdapter(mAdapter);
 
         // receber conversa do mongodb
         AsyncTask.execute(new Runnable() {
@@ -358,26 +364,43 @@ public class Conversation extends BaseActivity  {
 
                         data.add(item);
                     }
-                    // update do UI deve ser feito pelo UI
-                    runOnUiThread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            Collections.reverse(data);
-                            mAdapter.addItem(data);
-                            // Stuff that updates the UI
-
-                        }
-                    });
 
                 } catch (JSONException e) {
                     //   System.out.println(e.getMessage());
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+// update do UI deve ser feito pelo UI
+                Collections.reverse(data);
+                runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        mAdapter.addItem(data);
+                        mRecyclerView.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+
+                                    // todo BUG "Invalid target position"
+                                    mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }, 1000);
+                        // Stuff that updates the UI
+
+                    }
+                });
+
+
+
 
 
             }
+
         });
 
         //--fim receber conversas
@@ -392,22 +415,8 @@ public class Conversation extends BaseActivity  {
         // IPG - Alteração -------------- Daey
 
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                try {
 
-                    // todo BUG "Invalid target position"
-                    mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }, 1000);
+
 
         text = (EditText) findViewById(R.id.et_message);
 

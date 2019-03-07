@@ -28,16 +28,16 @@ public class ConversationRecyclerView extends RecyclerView.Adapter<RecyclerView.
     private List<ChatData> items;
     private Context mContext;
     // --- Luis --- envio ficheiro
-    private List<File> imagesFiles;
+ //   private List<File> imagesFiles;
 
 
     private final int DATE = 0, YOU = 1, ME = 2, IMAGE_ME = 3, IMAGE_YOU = 4;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public ConversationRecyclerView(Context context, List<ChatData> items,List<File> imagesFiles) {
+    public ConversationRecyclerView(Context context, List<ChatData> items ){ //List<File> imagesFiles) {
         this.mContext = context;
         this.items = items;
-        this.imagesFiles = imagesFiles;
+     //   this.imagesFiles = imagesFiles;
     }
 
 
@@ -59,8 +59,7 @@ public class ConversationRecyclerView extends RecyclerView.Adapter<RecyclerView.
             return YOU;
         }else if (items.get(position).getType().equals("2")) {
             return ME;
-
-    }
+        }
         return -1;
     }
 
@@ -71,14 +70,7 @@ public class ConversationRecyclerView extends RecyclerView.Adapter<RecyclerView.
 
         switch (viewType) {
             //----  enviar img
-            case IMAGE_ME:
-                View v3 = inflater.inflate(R.layout.layout_holder_image, viewGroup, false);
-                viewHolder = new HolderMe(v3);
-                break;
-            case IMAGE_YOU:
-                View v4 = inflater.inflate(R.layout.layout_holder_image, viewGroup, false);
-                viewHolder = new HolderYou(v4);
-                break;
+
              //-------------------
             case DATE:
                 View v1 = inflater.inflate(R.layout.layout_holder_date, viewGroup, false);
@@ -102,6 +94,14 @@ public class ConversationRecyclerView extends RecyclerView.Adapter<RecyclerView.
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         switch (viewHolder.getItemViewType()) {
+          //  case IMAGE_ME:
+          //      HolderMe vh3 = (HolderMe) viewHolder;
+          //      configureViewHolder4(vh3, position);
+          //      break;
+          //  case IMAGE_YOU:
+          //      HolderYou vh4 = (HolderYou) viewHolder;
+          //      configureViewHolder5(vh4, position);
+          //      break;
             case DATE:
                 HolderDate vh1 = (HolderDate) viewHolder;
                 configureViewHolder1(vh1, position);
