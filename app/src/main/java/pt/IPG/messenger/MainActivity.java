@@ -75,11 +75,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+
 
         Nammu.init(this);
-
-        mProgressView = findViewById(R.id.Contact_progress);
 
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
@@ -95,6 +94,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 }
             });
         }
+
+        setContentView(R.layout.activity_main);
+
+
+
+        mProgressView = findViewById(R.id.Contact_progress);
+
+
 
         EasyImage.configuration(this)
                 .setImagesFolderName("EasyImage_sample")
@@ -138,11 +145,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 //TODO your background code
                 SharedPreferences settings = MainActivity.this.getSharedPreferences("myPrefs", 0);
                 //retrieve
-                 String auth_token_string = settings.getString("token", ""/*default value*/);
+                String auth_token_string = settings.getString("token", ""/*default value*/);
                 String token = auth_token_string;
 
                 JSONObject request = new JSONObject();
-                String result =  getJSONFromUrl();
+                String result =  Tools.getJSONFromUrl(settings);
 
                 try {
                     JSONObject jsonRoot  = new JSONObject(result);
@@ -176,7 +183,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     b.putStringArrayList("Contactos", conversation);
 
                     String myLocation = "";
-                    myLocation = settings.getString("lyLocation", ""/*default value*/);
+                    myLocation = settings.getString("myLocation", ""/*default value*/);
 
                     b.putString("Localization",myLocation);
 
@@ -198,42 +205,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 
 
-    public String getJSONFromUrl() {
-        SharedPreferences settings = this.getSharedPreferences("myPrefs", 0);
-        String tokenOK = settings.getString("token", ""/*default value*/);
 
-        //String tokenOK = "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1YzY2OWU4YWU0M2UzZDNlMjQ0ZjRhZTciLCJmaXJzdE5hbWUiOiJEYW5pZWwiLCJsYXN0TmFtZSI6Ik1lbmRlcyIsImVtYWlsIjoiZGFuaWVsQGVwdC5wdCIsInJvbGUiOiJNZW1iZXIiLCJpYXQiOjE1NTA0OTQ3NDAsImV4cCI6MTU1MTA5OTU0MH0.pNmjguEXsaHDBIp1Hwt5BuzF74iSlFqsqMZCrendwxk";
-        String result ="";
-        try {
-            //Connect
-            HttpURLConnection urlConnection = (HttpURLConnection) (new URL("https://chat-ipg-04.azurewebsites.net/api/chat").openConnection());
-            //   urlConnection.setDoOutput(false);
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setRequestProperty("Content-Type", "application/json");
-            urlConnection.setRequestProperty("Accept", "application/json");
-            urlConnection.setRequestProperty("Authorization", tokenOK);
-
-            urlConnection.connect();
-            urlConnection.setConnectTimeout(10000);
-
-            //Read
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
-            String line = null;
-            StringBuilder sb = new StringBuilder();
-            while ((line = bufferedReader.readLine()) != null) {
-                sb.append(line);
-            }
-            bufferedReader.close();
-            result = sb.toString();
-        } catch (UnsupportedEncodingException e){
-            return result;
-            //  e.printStackTrace();
-        } catch (IOException e) {
-            return result;
-            // e.printStackTrace();
-        }
-        return result;
-    }
 
 
     private void initializeCountDrawer(){

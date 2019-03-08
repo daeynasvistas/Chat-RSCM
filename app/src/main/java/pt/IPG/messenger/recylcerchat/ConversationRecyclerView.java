@@ -156,10 +156,14 @@ public class ConversationRecyclerView extends RecyclerView.Adapter<RecyclerView.
     private void configureViewHolder3(HolderMe vh1, int position) {
             vh1.getTime().setText(items.get(position).getTime());
             if(items.get(position).getText().startsWith("5_")){
-                String substring = items.get(position).getText().substring(2);
-                byte[] decodedString = Base64.decode(substring, Base64.DEFAULT);
-                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                vh1.getImageView().setImageBitmap(decodedByte);
+                try {
+                    String substring = items.get(position).getText().substring(2);
+                    byte[] decodedString = Base64.decode(substring, Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                    vh1.getImageView().setImageBitmap(decodedByte);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 /*
                 Picasso.get()
                         .load(substring)

@@ -251,4 +251,45 @@ public class Tools {
         return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
+
+
+    public static String getJSONFromUrl(SharedPreferences settings) {
+
+        String tokenOK = settings.getString("token", ""/*default value*/);
+
+        //String tokenOK = "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1YzY2OWU4YWU0M2UzZDNlMjQ0ZjRhZTciLCJmaXJzdE5hbWUiOiJEYW5pZWwiLCJsYXN0TmFtZSI6Ik1lbmRlcyIsImVtYWlsIjoiZGFuaWVsQGVwdC5wdCIsInJvbGUiOiJNZW1iZXIiLCJpYXQiOjE1NTA0OTQ3NDAsImV4cCI6MTU1MTA5OTU0MH0.pNmjguEXsaHDBIp1Hwt5BuzF74iSlFqsqMZCrendwxk";
+        String result ="";
+        try {
+            //Connect
+            HttpURLConnection urlConnection = (HttpURLConnection) (new URL("https://chat-ipg-04.azurewebsites.net/api/chat").openConnection());
+            //   urlConnection.setDoOutput(false);
+            urlConnection.setRequestMethod("GET");
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+            urlConnection.setRequestProperty("Accept", "application/json");
+            urlConnection.setRequestProperty("Authorization", tokenOK);
+
+            urlConnection.connect();
+            urlConnection.setConnectTimeout(10000);
+
+            //Read
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+            String line = null;
+            StringBuilder sb = new StringBuilder();
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+            bufferedReader.close();
+            result = sb.toString();
+        } catch (UnsupportedEncodingException e){
+            return result;
+            //  e.printStackTrace();
+        } catch (IOException e) {
+            return result;
+            // e.printStackTrace();
+        }
+        return result;
+    }
+
+
+
 }

@@ -18,6 +18,7 @@
         android:focusable="true"
         android:focusableInTouchMode="true">
 
+
         <Button
             android:id="@+id/bt_send"
             android:layout_width="60dp"
@@ -90,6 +91,13 @@
 
         </RelativeLayout>
     </RelativeLayout>
+    <ProgressBar
+        android:id="@+id/simpleProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:padding="@dimen/space15"
+        android:layout_centerHorizontal="true"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"

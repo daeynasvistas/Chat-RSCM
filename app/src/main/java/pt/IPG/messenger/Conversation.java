@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,7 +58,6 @@ public class Conversation extends BaseActivity  {
     String ID = "";
 
     SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
 
     // IPG - Alteração -------------- Daey
     private Socket mSocket;
@@ -211,6 +212,8 @@ public class Conversation extends BaseActivity  {
 
         // IPG - Alteração -------------- Dinis
         try {
+            // remover encrip p+ara aumentar speed (não é necessário encript imagem)
+           // msg = "0:"+msg;
             msg = encryption.Encrypt(msg, Encryption.MessageType.Encrypted);
         } catch (Exception e) {
             e.printStackTrace();
@@ -306,7 +309,10 @@ public class Conversation extends BaseActivity  {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mAdapter);
+// initiate progress bar and start button
+        final ProgressBar simpleProgressBar = (ProgressBar) findViewById(R.id.simpleProgressBar);
 
+        simpleProgressBar.setVisibility(View.VISIBLE);
         // receber conversa do mongodb
         AsyncTask.execute(new Runnable() {
             List<ChatData> data = new ArrayList<ChatData>();
@@ -378,6 +384,7 @@ public class Conversation extends BaseActivity  {
                     public void run() {
 
                         mAdapter.addItem(data);
+                        simpleProgressBar.setVisibility(View.INVISIBLE);
                         mRecyclerView.postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -389,7 +396,7 @@ public class Conversation extends BaseActivity  {
                                     e.printStackTrace();
                                 }
                             }
-                        }, 1000);
+                        }, 100);
                         // Stuff that updates the UI
 
                     }
