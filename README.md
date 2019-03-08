@@ -38,9 +38,9 @@ https://documenter.getpostman.com/view/1885494/S11Bxgv2#6bf6dd63-7868-4b61-9859-
 
 ### Requisitos de implementação - Segurança
 - [X] Comunicação em claro com verificação da integridade da comunicação
-- [ ] Escolha de um dos algoritmos MD5 ou SHA Hash Algorithms: SHA-1, HAVAL, MD2, MD5, SHA-256, SHA-384, SHA-512
+- [x] Escolha de um dos algoritmos MD5 ou SHA Hash Algorithms: SHA-1, HAVAL, MD2, MD5, SHA-256, SHA-384, SHA-512
 - [x] Comunicação encriptada de mensagens
-- [ ] Escolha de um dos protocolos DES, 3DES ou AES
+- [x] Escolha de um dos protocolos DES, 3DES ou AES
 
 
 ## Version
