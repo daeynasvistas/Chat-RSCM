@@ -19,17 +19,20 @@ import java.util.Locale;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
 
+import pt.IPG.messenger.VideoChatViewActivity;
+import pt.IPG.messenger.VoiceChatViewActivity;
+
 public class VoiceChatViewActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = VoiceChatViewActivity.class.getSimpleName();
 
     private static final int PERMISSION_REQ_ID_RECORD_AUDIO = 22;
 
-    private RtcEngine mRtcEngine;// Tutorial Step 1
-    private final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() { // Tutorial Step 1
+    private RtcEngine mRtcEngine;
+    private final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() {
 
         @Override
-        public void onUserOffline(final int uid, final int reason) { // Tutorial Step 4
+        public void onUserOffline(final int uid, final int reason) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -39,7 +42,7 @@ public class VoiceChatViewActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onUserMuteAudio(final int uid, final boolean muted) { // Tutorial Step 6
+        public void onUserMuteAudio(final int uid, final boolean muted) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -60,16 +63,13 @@ public class VoiceChatViewActivity extends AppCompatActivity {
     }
 
     private void initAgoraEngineAndJoinChannel() {
-        initializeAgoraEngine();     // Tutorial Step 1
-        joinChannel();               // Tutorial Step 2
+        initializeAgoraEngine();
+        joinChannel();
     }
 
     public boolean checkSelfPermission(String permission, int requestCode) {
         Log.i(LOG_TAG, "checkSelfPermission " + permission + " " + requestCode);
-        if (ContextCompat.checkSelfPermission(this,
-                permission)
-                != PackageManager.PERMISSION_GRANTED) {
-
+        if (ContextCompat.checkSelfPermission(this,permission)!= PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                     new String[]{permission},
                     requestCode);
@@ -79,14 +79,12 @@ public class VoiceChatViewActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,String permissions[],int[] grantResults) {
         Log.i(LOG_TAG, "onRequestPermissionsResult " + grantResults[0] + " " + requestCode);
 
         switch (requestCode) {
             case PERMISSION_REQ_ID_RECORD_AUDIO: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     initAgoraEngineAndJoinChannel();
                 } else {
                     showLongToast("No permission for " + Manifest.permission.RECORD_AUDIO);
@@ -162,7 +160,7 @@ public class VoiceChatViewActivity extends AppCompatActivity {
 
 
     private void joinChannel() {
-        mRtcEngine.joinChannel(null, "erhgtjehj4eh53ezf34a1ehbse1f5s", "Extra Optional Data", 0); // if you do not specify the uid, we will generate the uid for you
+        mRtcEngine.joinChannel(null, "erhgtjehj4eh53ezf34a1ehbse1f5s", "Extra Optional Data", 0);
     }
 
 
@@ -174,7 +172,7 @@ public class VoiceChatViewActivity extends AppCompatActivity {
 
     private void onRemoteUserLeft(int uid, int reason) {
         showLongToast(String.format(Locale.US, "user %d left %d", (uid & 0xFFFFFFFFL), reason));
-        View tipMsg = findViewById(R.id.quick_tips_when_use_agora_sdk); // optional UI
+        View tipMsg = findViewById(R.id.quick_tips_when_use_agora_sdk);
         tipMsg.setVisibility(View.VISIBLE);
     }
 

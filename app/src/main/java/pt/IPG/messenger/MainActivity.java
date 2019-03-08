@@ -59,6 +59,8 @@ import pl.tajchert.nammu.Nammu;
 import pl.tajchert.nammu.PermissionCallback;
 import pt.IPG.messenger.recyclerview.Chat;
 
+
+
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     TextView chats;
     NavigationView navigationView, navigationViewBottom;
@@ -295,10 +297,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return true;
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return super.onPrepareOptionsMenu(menu);
-    }
 
 
     public void Call(View view) {
@@ -307,4 +305,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         startActivity(intent);
         finish();
     }
+
+    public void abrirVideo(View view) {
+        Intent intent = new Intent(MainActivity.this, VideoChatViewActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+
+
 }

@@ -39,9 +39,13 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.github.tajchert:nammu:1.2.0'
     implementation 'com.github.jkwiecien:EasyImage:2.1.0'
+    //implementation 'io.agora.rtc:voice-sdk:2.2.0' //Chamadas de Voz
+    implementation 'io.agora.rtc:full-sdk:2.3.3' //Chamadas de Video
     // CHAT SOCKET.IO IPG alteração
     api('io.socket:socket.io-client:1.0.0') {
         exclude group: 'org.json', module: 'json'
     }
-    implementation 'io.agora.rtc:voice-sdk:2.2.0'
+
+
+
 }

@@ -38,6 +38,9 @@ import pl.tajchert.nammu.Nammu;
 import pt.IPG.messenger.recylcerchat.ChatData;
 import pt.IPG.messenger.recylcerchat.ConversationRecyclerView;
 
+import pt.IPG.messenger.VideoChatViewActivity;
+import pt.IPG.messenger.VoiceChatViewActivity;
+
 
 public class Conversation extends BaseActivity  {
     private static final String PHOTOS_KEY = "easy_image_photos_list";
@@ -674,6 +677,12 @@ public class Conversation extends BaseActivity  {
     public void Call(View view) {
 
         Intent intent = new Intent(Conversation.this, VoiceChatViewActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    public void abrirVideo(View view) {
+        Intent intent = new Intent(Conversation.this, VideoChatViewActivity.class);
         startActivity(intent);
         finish();
     }
