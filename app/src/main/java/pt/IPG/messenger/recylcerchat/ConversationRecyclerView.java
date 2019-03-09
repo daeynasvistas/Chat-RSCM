@@ -160,13 +160,14 @@ public class ConversationRecyclerView extends RecyclerView.Adapter<RecyclerView.
                 byte[] decodedString = Base64.decode(substring, Base64.DEFAULT);
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 vh1.getImageView().setImageBitmap(decodedByte);
+
                 /*
                 Picasso.get()
-                        .load(substring)
+                        .load(decodedByte)
                         .resize(350,350)
                         .centerCrop()
                         .into(vh1.getImageView());
-            */
+*/
             }
             else {
                  vh1.getImageView().setVisibility(View.GONE);
