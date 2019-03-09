@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Chat-RSCM.iml" filepath="$PROJECT_DIR$/Chat-RSCM.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/v2_CHAT.iml" filepath="$PROJECT_DIR$/v2_CHAT.iml" />
     </modules>
   </component>
 </project>
