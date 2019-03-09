@@ -472,6 +472,7 @@ public class Conversation extends BaseActivity  {
         });
         */
 
+
         // --- Daey enviar localização
         send_localization = (ImageButton) findViewById(R.id.bt_attachment_localization);
         send_localization.setOnClickListener(new View.OnClickListener() {
