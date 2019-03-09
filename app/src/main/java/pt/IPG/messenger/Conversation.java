@@ -377,6 +377,7 @@ public class Conversation extends BaseActivity  {
                     e.printStackTrace();
                 }
 // update do UI deve ser feito pelo UI
+                
                 Collections.reverse(data);
                 runOnUiThread(new Runnable() {
 
