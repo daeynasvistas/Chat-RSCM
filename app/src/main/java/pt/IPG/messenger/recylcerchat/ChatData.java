@@ -6,6 +6,7 @@ package pt.IPG.messenger.recylcerchat;
 
 public class ChatData {
     String type, text, time;
+  //  String imageURI;
 
     public String getText() {
         return text;
@@ -30,4 +31,5 @@ public class ChatData {
     public void setTime(String time) {
         this.time = time;
     }
+
 }

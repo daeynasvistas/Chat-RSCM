@@ -11,6 +11,10 @@
         android:layout_marginLeft="@dimen/space10"
         android:layout_centerVertical="true"
         android:visibility="gone"/>
+
+
+
+
     <RelativeLayout
         android:id="@+id/rl_photo"
         android:layout_toRightOf="@id/chk_list"

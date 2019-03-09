@@ -16,19 +16,14 @@ https://documenter.getpostman.com/view/1885494/S11Bxgv2#6bf6dd63-7868-4b61-9859-
 
 4: enviar mensagens encriptadas entre utilizadores
 
-
-![1_chat](https://user-images.githubusercontent.com/2634610/53040183-bb9f2600-3478-11e9-94c1-e95d8fafb17e.png)
-![2_chat](https://user-images.githubusercontent.com/2634610/53040184-bb9f2600-3478-11e9-8bed-4a94e5375017.png)
-![3_chat](https://user-images.githubusercontent.com/2634610/53040187-bc37bc80-3478-11e9-91d1-a1d70be1f752.png)
-
-
 ### TODO
 # Functionality
 
 ### Funcionalidades - Serviços
 - [x] Troca de texto
 - [ ] Suporte de voz
-- [ ] Troca de ficheiros
+- [x] Troca de ficheiros
+- [x] Envio localização GPS
 
 ### Requisitos de Modos de comunicação
 - [ ] Comunicação por infra-estrutura
@@ -43,14 +38,26 @@ https://documenter.getpostman.com/view/1885494/S11Bxgv2#6bf6dd63-7868-4b61-9859-
 
 ### Requisitos de implementação - Segurança
 - [X] Comunicação em claro com verificação da integridade da comunicação
-- [ ] Escolha de um dos algoritmos MD5 ou SHA Hash Algorithms: SHA-1, HAVAL, MD2, MD5, SHA-256, SHA-384, SHA-512
+- [x] Escolha de um dos algoritmos MD5 ou SHA Hash Algorithms: SHA-1, HAVAL, MD2, MD5, SHA-256, SHA-384, SHA-512
 - [x] Comunicação encriptada de mensagens
-- [ ] Escolha de um dos protocolos DES, 3DES ou AES
+- [x] Escolha de um dos protocolos DES, 3DES ou AES
 
 
 ## Version
+v0.6
+
+![1](https://user-images.githubusercontent.com/2634610/53902629-6e56b300-4039-11e9-8a4d-6931c7688f27.png)
+![2](https://user-images.githubusercontent.com/2634610/53902626-6dbe1c80-4039-11e9-9e1c-4fca8d6f417c.png)
+
+v0.5
+
+![screenshot_20190306-172509](https://user-images.githubusercontent.com/2634610/53901257-76f9ba00-4036-11e9-8354-7c47436ce9cf.png)
+
 v0.2
 
+![1_chat](https://user-images.githubusercontent.com/2634610/53040183-bb9f2600-3478-11e9-94c1-e95d8fafb17e.png)
+![2_chat](https://user-images.githubusercontent.com/2634610/53040184-bb9f2600-3478-11e9-8bed-4a94e5375017.png)
+![3_chat](https://user-images.githubusercontent.com/2634610/53040187-bc37bc80-3478-11e9-91d1-a1d70be1f752.png)
 
 
 
