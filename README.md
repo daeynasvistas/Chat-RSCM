@@ -44,6 +44,10 @@ https://documenter.getpostman.com/view/1885494/S11Bxgv2#6bf6dd63-7868-4b61-9859-
 
 
 ## Version
+v0.7
+
+![Screenshot_20190309-192843](https://user-images.githubusercontent.com/2634610/54076276-bed04980-42a1-11e9-8312-3140b7506243.png)
+
 v0.6
 
 ![1](https://user-images.githubusercontent.com/2634610/53902629-6e56b300-4039-11e9-8a4d-6931c7688f27.png)
