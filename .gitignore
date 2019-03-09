@@ -40,4 +40,5 @@ captures/
 *.jks
 
 # confict cache
-cache/
+build_file_checksums.ser
+gradle_models.ser
