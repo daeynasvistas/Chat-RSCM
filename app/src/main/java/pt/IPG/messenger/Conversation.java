@@ -462,7 +462,15 @@ public class Conversation extends BaseActivity  {
                 EasyImage.openGallery(Conversation.this, 0);
             }
         });
-
+/*
+        findViewById(R.id.).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               finish();
+               return;
+            }
+        });
+*/
 
 
 
