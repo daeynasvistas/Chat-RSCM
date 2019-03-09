@@ -111,7 +111,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         isLoggedIn = accessToken != null && !accessToken.isExpired();
 
-        if(isLoggedIn){
+        if (isLoggedIn) {
             disconnectFromFacebook();
         }
 
@@ -157,7 +157,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
-
 
 
     private void populateAutoComplete() {
@@ -268,7 +267,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password,this);
+            mAuthTask = new UserLoginTask(email, password, this);
             mAuthTask.execute((Void) null);
         }
     }
@@ -381,12 +380,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         private final String mEmail;
         private final String mPassword;
-        Activity instance ;
+        String firstName = "";
+        String lastName = "";
+    //    String picture = "";
+        Activity instance;
 
-        UserLoginTask(String email, String password , Activity instance) {
+        UserLoginTask(String email, String password, Activity instance) {
             mEmail = email;
             mPassword = password;
-            this.instance = instance ;
+            this.instance = instance;
         }
 
         @Override
@@ -395,25 +397,35 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             JSONObject request = new JSONObject();
             try {
-                request.put("email",mEmail );
+                request.put("email", mEmail);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             try {
-                request.put("password",mPassword );
+                request.put("password", mPassword);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-            String result =  connectWithServer(instance , request);
+            String result = connectWithServer(instance, request);
 
-            if(!TextUtils.isEmpty(result)){
+            if (!TextUtils.isEmpty(result)) {
                 // guardar token e ID Vhange Daey https://stackoverflow.com/questions/48264428/how-to-store-token-in-android
                 try {
-                    JSONObject  object  = new JSONObject(result);
+                    JSONObject object = new JSONObject(result);
                     JSONObject userObject = object.getJSONObject("user");
                     String token = object.getString("token");
                     String ID = userObject.getString("_id");
+                    if (String.valueOf(userObject).contains("firstName")) {
+                        firstName = userObject.getString("firstName");
+                    }
+                    if (String.valueOf(userObject).contains("lastName")) {
+                        lastName = userObject.getString("lastName");
+                    }
+
+                    /*if (String.valueOf(userObject).contains("picture")) {
+                        picture = userObject.getString("picture");
+                    }*/
 
                     //store
                     SharedPreferences settings = getSharedPreferences("myPrefs", 0);
@@ -422,19 +434,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     editor.putString("ID", ID);
                     editor.commit();
 
-                  //  SharedPreferences preferences = getSharedPreferences("myPrefs", MODE_PRIVATE);
-                  //  preferences.edit().putString("token", token).apply();
-                  //  preferences.edit().putString("ID", ID).apply();
+                    //  SharedPreferences preferences = getSharedPreferences("myPrefs", MODE_PRIVATE);
+                    //  preferences.edit().putString("token", token).apply();
+                    //  preferences.edit().putString("ID", ID).apply();
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 // guardar token e ID Vhange Daey
-;
+                ;
 
 
                 return true;
-            }else{
+            } else {
                 return false;
             }
 
@@ -446,10 +458,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(true);
             if (success) {
                 finish();
-
-
-
                 Intent loginIntent = new Intent(LoginActivity.this, MainActivity.class);
+                loginIntent.putExtra("nome", firstName + " " + lastName);
+             //   loginIntent.putExtra("img", picture);
                 startActivity(loginIntent);
             } else {
                 showProgress(false);
@@ -468,8 +479,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
 
-    public static String connectWithServer(Activity ctx , JSONObject request) {
-        String result ="";
+    public static String connectWithServer(Activity ctx, JSONObject request) {
+        String result = "";
         try {
             //Connect
             HttpURLConnection urlConnection = (HttpURLConnection) (new URL("http://chat-ipg-04.azurewebsites.net/api/auth/login").openConnection());
@@ -498,12 +509,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             result = sb.toString();
 
 
-        } catch (UnsupportedEncodingException e){
+        } catch (UnsupportedEncodingException e) {
             return result;
-          //  e.printStackTrace();
+            //  e.printStackTrace();
         } catch (IOException e) {
             return result;
-          // e.printStackTrace();
+            // e.printStackTrace();
         }
         return result;
     }
@@ -556,7 +567,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                     String password = object.getString("id");
                                     String email = object.getString("email");
 
-                                    mAuthTask = new UserLoginTask(email, password,LoginActivity.this);
+                                    mAuthTask = new UserLoginTask(email, password, LoginActivity.this);
                                     mAuthTask.execute((Void) null);
 
                                 } catch (JSONException e) {

@@ -88,7 +88,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         dealWithFacebook();
 
-
         Button mEmailSignInButton = findViewById(R.id.register_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -97,7 +96,6 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
     private void dealWithFacebook() {
@@ -105,14 +103,13 @@ public class RegisterActivity extends AppCompatActivity {
         loginButton.setReadPermissions(Arrays.asList(
                 "public_profile", "email", "user_birthday", "user_gender"));
 
-
         callbackManager = CallbackManager.Factory.create();
 
         // Callback registration
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                // App code
+
                 GraphRequest request = GraphRequest.newMeRequest(
                         loginResult.getAccessToken(),
                         new GraphRequest.GraphJSONObjectCallback() {
@@ -120,7 +117,6 @@ public class RegisterActivity extends AppCompatActivity {
                             public void onCompleted(JSONObject object, GraphResponse response) {
                                 Log.v("LoginActivity", response.toString());
 
-                                // Application code
                                 try {
                                     final String password = object.getString("id");
                                     final String gender = object.getString("gender");
@@ -160,18 +156,15 @@ public class RegisterActivity extends AppCompatActivity {
                 request.setParameters(parameters);
                 request.executeAsync();
 
-
             }
 
             @Override
             public void onCancel() {
-                // App code
                 Log.v("LoginActivity", "cancel");
             }
 
             @Override
             public void onError(FacebookException exception) {
-                // App code
                 Log.v("LoginActivity", exception.getCause().toString());
             }
         });
@@ -192,7 +185,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             if (bm != null) {
-                bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             }
 
             byte[] byteArray = baos.toByteArray();
@@ -266,12 +259,10 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
         return email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
         return password.length() > 4;
     }
 
@@ -307,9 +298,19 @@ public class RegisterActivity extends AppCompatActivity {
                 request.put("password", mPassword);
                 request.put("firstName", mFirstName);
                 request.put("lastName", mLastName);
-                request.put("gender", mGender);//TODO - verificar se os nomes são iguais aos que o Daniel adicionou
-                request.put("birthDate", mBirthDate);//TODO - verificar se os nomes são iguais aos que o Daniel adicionou
-                request.put("imageBase64", mImageBase64);//TODO - verificar se os nomes são iguais aos que o Daniel adicionou
+                request.put("gender", mGender);
+                String birth = "";
+                for(int i = 0; i < mBirthDate.length(); i++)
+                {
+                    char c = mBirthDate.charAt(i);
+                    if(c != '/'){
+                        birth = birth + c;
+                    }
+                }
+
+
+                request.put("birthDate", birth);
+              //  request.put("picture", mImageBase64);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -324,13 +325,11 @@ public class RegisterActivity extends AppCompatActivity {
                     String token = object.getString("token");
                     String ID = userObject.getString("_id");
 
-                    //store
                     SharedPreferences settings = getSharedPreferences("myPrefs", 0);
                     SharedPreferences.Editor editor = settings.edit();
                     editor.putString("token", token);
                     editor.putString("ID", ID);
                     editor.commit();
-
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -347,8 +346,12 @@ public class RegisterActivity extends AppCompatActivity {
             mAuthTask = null;
             if (success) {
                 finish();
+
                 Intent registerIntent = new Intent(RegisterActivity.this, MainActivity.class);
+                registerIntent.putExtra("nome", mFirstName + " " + mLastName);
+             //   registerIntent.putExtra("img", mImageBase64);
                 startActivity(registerIntent);
+
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();

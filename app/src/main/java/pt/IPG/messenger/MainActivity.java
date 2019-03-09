@@ -2,8 +2,11 @@ package pt.IPG.messenger;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.location.Address;
 import android.location.Geocoder;
@@ -20,12 +23,16 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -63,6 +70,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     List<Chat> data = new ArrayList<>();
     SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
+    TextView tvNome;
+    ImageView imageUser;
 
 
     @Override
@@ -93,6 +102,23 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         chats =(TextView) MenuItemCompat.getActionView(navigationView.getMenu().
                 findItem(R.id.nav_chats));
         initializeCountDrawer();
+
+
+        //BS: image and name
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View headerView = navigationView.getHeaderView(0);
+        tvNome = headerView.findViewById(R.id.tvNome);
+        imageUser = headerView.findViewById(R.id.imageView);
+
+        Intent myIntent = getIntent();
+        String nome = myIntent.getStringExtra("nome");
+     //   String img = myIntent.getStringExtra("img");
+        tvNome.setText(nome);
+       /* byte[] decodedString = Base64.decode(img, Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        imageUser.setImageBitmap(decodedByte);*/
+
     }
 
     private void getContact() {
