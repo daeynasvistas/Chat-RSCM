@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Base64;
@@ -217,11 +218,11 @@ public class Tools {
         Bitmap bm = BitmapFactory.decodeFile(returnedPhotos.get(returnedPhotos.size()-1).toString());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        Bitmap converetdImage = getResizedBitmap(bm, 350);
-        Bitmap.createScaledBitmap(converetdImage, 350, 350, true);
+        Bitmap converetdImage = getResizedBitmap(bm, 250);
+        Bitmap.createScaledBitmap(converetdImage, 250, 250, true);
 
 
-        converetdImage.compress(Bitmap.CompressFormat.JPEG, 60, baos); //bm is the bitmap object
+        converetdImage.compress(Bitmap.CompressFormat.JPEG, 50, baos); //bm is the bitmap object
         byte[] b = baos.toByteArray();
 
         String encodedImage = "5_";

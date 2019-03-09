@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -204,7 +206,7 @@ public class Conversation extends BaseActivity  {
         // já há string ----
         String msg = encodedImage;
 
-        item.setType("3");
+        item.setType("2");
         item.setText(msg);
         data.add(item);
         mAdapter.addItem(data);
@@ -231,7 +233,7 @@ public class Conversation extends BaseActivity  {
             });
 
             // IPG - Alteração -------------- Dinis
-            mSocket.emit("new message", room,msg, ID);
+            mSocket.emit("new message", room, msg, ID);
             //mSocket.emit("new message", room, text.getText() , ID);
         } catch (Exception e) {
             e.printStackTrace();
@@ -307,6 +309,10 @@ public class Conversation extends BaseActivity  {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mAdapter);
 
+// initiate progress bar and start button
+        final ProgressBar simpleProgressBar = (ProgressBar) findViewById(R.id.simpleProgressBar);
+
+        simpleProgressBar.setVisibility(View.VISIBLE);
         // receber conversa do mongodb
         AsyncTask.execute(new Runnable() {
             List<ChatData> data = new ArrayList<ChatData>();
@@ -385,6 +391,7 @@ public class Conversation extends BaseActivity  {
 
                                     // todo BUG "Invalid target position"
                                     mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
+                                    simpleProgressBar.setVisibility(View.INVISIBLE);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
