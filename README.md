@@ -21,7 +21,7 @@ https://documenter.getpostman.com/view/1885494/S11Bxgv2#6bf6dd63-7868-4b61-9859-
 
 ### Funcionalidades - Serviços
 - [x] Troca de texto
-- [ ] Suporte de voz
+- [X] Suporte de voz
 - [x] Troca de ficheiros
 - [x] Envio localização GPS
 
