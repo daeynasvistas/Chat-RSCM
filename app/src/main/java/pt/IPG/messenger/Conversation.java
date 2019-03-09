@@ -133,8 +133,6 @@ public class Conversation extends BaseActivity  {
     };
 
 
-
-
     //---------------------------- Imagens .. envio -.------- v 0.1
     @Override
     public void onSaveInstanceState(Bundle outState) {
